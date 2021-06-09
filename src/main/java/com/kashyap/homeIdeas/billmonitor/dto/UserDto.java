@@ -1,43 +1,14 @@
-package com.kashyap.homeIdeas.billmonitor.model;
+package com.kashyap.homeIdeas.billmonitor.dto;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+public class UserDto {
 
-@Document(indexName = "user")
-public class User {
-
-    @Id
-    private String id;
-
-    @Field(type = FieldType.Text)
     private String firstname;
-
-    @Field(type = FieldType.Text)
     private String lastname;
-
-    @Field(type = FieldType.Text)
     private String username;
-
-    @Field(type = FieldType.Text)
     private String password;
-
-    @Field(type = FieldType.Text)
     private String email;
-
-    @Field(type = FieldType.Long)
     private long mobileNo;
-
-    private UserRole role;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    private String role;
 
     public String getFirstname() {
         return firstname;
@@ -87,11 +58,11 @@ public class User {
         this.mobileNo = mobileNo;
     }
 
-    public UserRole getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(UserRole role) {
+    public void setRole(String role) {
         this.role = role;
     }
 }
