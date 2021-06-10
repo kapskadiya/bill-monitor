@@ -1,6 +1,8 @@
 package com.kashyap.homeIdeas.billmonitor.model;
 
+import org.elasticsearch.common.Nullable;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -9,6 +11,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class User {
 
     @Id
+    @ReadOnlyProperty
     private String id;
 
     @Field(type = FieldType.Text)
@@ -18,9 +21,11 @@ public class User {
     private String lastname;
 
     @Field(type = FieldType.Text)
+    @Nullable
     private String username;
 
     @Field(type = FieldType.Text)
+    @Nullable
     private String password;
 
     @Field(type = FieldType.Text)

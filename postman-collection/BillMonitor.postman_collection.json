@@ -1,0 +1,61 @@
+{
+	"info": {
+		"_postman_id": "610f99f9-8975-4c57-a154-2821d24038fb",
+		"name": "BillMonitor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User > Save",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"kashyap\",\r\n    \"lastname\": \"kadiya\",\r\n    \"username\": \"kashyapkadiya\",\r\n    \"password\": \"kaps1598\",\r\n    \"email\": \"kapskadiya@gmail.com\",\r\n    \"mobileNo\": 9925035402,\r\n    \"role\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/user/save",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"user",
+						"save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User > GetById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rest/user/getUser/_IQ_9HkBRfZndn956r8G",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"user",
+						"getUser",
+						"_IQ_9HkBRfZndn956r8G"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
