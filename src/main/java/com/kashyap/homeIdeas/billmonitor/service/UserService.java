@@ -1,11 +1,12 @@
 package com.kashyap.homeIdeas.billmonitor.service;
 
 import com.kashyap.homeIdeas.billmonitor.model.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     boolean save(final User user);
 
