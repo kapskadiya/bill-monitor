@@ -5,6 +5,8 @@ import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -103,4 +105,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+        return userRepo.findByUsername(username)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException(String.format("User with username - %s, not found", username)));
+    }
 }
