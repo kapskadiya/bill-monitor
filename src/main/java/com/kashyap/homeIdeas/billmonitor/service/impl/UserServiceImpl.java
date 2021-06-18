@@ -3,6 +3,7 @@ package com.kashyap.homeIdeas.billmonitor.service.impl;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepo;
 
     @Override
-    public boolean save(User user) {
+    public boolean save(final User user) {
 
         if (user == null) {
             return false;
@@ -31,20 +32,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean update(User user) {
-
+    public boolean update(final User user) {
         if (user == null) {
             return false;
         }
 
-        // TODO: add logic to fill up the empty values.
+        final User existingUser = this.getByUsername(user.getUsername());
 
-        return (userRepo.save(user) != null);
-    }
+        if (existingUser == null) {
+            return false;
+        }
 
-    @Override
-    public boolean partialUpdate(User user) {
-        return false;
+        this.fillUser(existingUser, user);
+
+        return (userRepo.save(existingUser) != null);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getByFirstname(String firstname) {
+    public List<User> getByFirstname(final String firstname) {
         validateString(firstname);
 
         final List<User> userList = userRepo.findByFirstname(firstname);
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getByLastname(String lastname) {
+    public List<User> getByLastname(final String lastname) {
         validateString(lastname);
 
         final List<User> userList = userRepo.findByLastname(lastname);
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> search(String keyword) {
+    public List<User> search(final String keyword) {
         return null;
     }
 
@@ -94,9 +95,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean removeByUsername(String username) throws IOException {
+    public boolean removeByUsername(final String username) throws IOException {
         validateString(username);
         return userRepo.removeByUsername(username);
+    }
+
+    @Override
+    public boolean disableUser(final String username) throws IOException {
+        validateString(username);
+        return userRepo.disableUser(username);
+    }
+
+    @Override
+    public boolean enableUser(final String username) throws IOException {
+        validateString(username);
+        return userRepo.enableUser(username);
     }
 
     private void validateString(final String str) {
@@ -111,4 +124,32 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(
                         () -> new UsernameNotFoundException(String.format("User with username - %s, not found", username)));
     }
+
+    @Override
+    public void upsert(final User user) throws IOException {
+        if (user != null) {
+            userRepo.upsert(user);
+        }
+    }
+
+    private void fillUser(final User existingUser, final User newUser) {
+        if (StringUtils.isNotBlank(newUser.getFirstname())) {
+            existingUser.setFirstname(newUser.getFirstname());
+        }
+        if (StringUtils.isNotBlank(newUser.getLastname())) {
+            existingUser.setLastname(newUser.getLastname());
+        }
+        if (StringUtils.isNotBlank(newUser.getEmail())) {
+            existingUser.setEmail(newUser.getEmail());
+        }
+        if (newUser.getMobileNo() != null) {
+            existingUser.setMobileNo(newUser.getMobileNo());
+        }
+        if (CollectionUtils.isNotEmpty(newUser.getAuthorities())) {
+            existingUser.setAuthorities(newUser.getAuthorities());
+        }
+
+    }
+
+
 }

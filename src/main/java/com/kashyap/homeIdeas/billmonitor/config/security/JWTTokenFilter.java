@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class JWTTokenFilter extends OncePerRequestFilter {
@@ -49,12 +50,15 @@ public class JWTTokenFilter extends OncePerRequestFilter {
                 .findByUsername(jwtTokenUtil.getUsername(token))
                 .orElse(null);
 
+
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails == null ?
-                                List.of() : userDetails.getAuthorities()
+                        Optional
+                                .ofNullable(userDetails)
+                                .map(UserDetails::getAuthorities)
+                                .orElse(List.of())
                 );
 
         authentication.setDetails(

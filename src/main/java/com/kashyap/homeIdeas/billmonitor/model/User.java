@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Document(indexName = "user")
 public class User implements UserDetails {
@@ -36,9 +38,9 @@ public class User implements UserDetails {
     private String email;
 
     @Field(type = FieldType.Long)
-    private long mobileNo;
+    private Long mobileNo;
 
-    private UserRole role;
+    private Set<Role> authorities = new HashSet<>();
 
     private boolean enabled = true;
 
@@ -94,11 +96,6 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -115,23 +112,24 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public long getMobileNo() {
+    public Long getMobileNo() {
         return mobileNo;
     }
 
-    public void setMobileNo(long mobileNo) {
+    public void setMobileNo(Long mobileNo) {
         this.mobileNo = mobileNo;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public Set<Role> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Role> authorities) {
+        this.authorities = authorities;
     }
 }

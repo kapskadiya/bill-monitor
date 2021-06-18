@@ -10,9 +10,9 @@ public interface UserService extends UserDetailsService {
 
     boolean save(final User user);
 
-    boolean update(final User user);
+    void upsert(final User user) throws IOException;
 
-    boolean partialUpdate(final User user);
+    boolean update(final User user);
 
     User getById(final String id);
 
@@ -27,5 +27,9 @@ public interface UserService extends UserDetailsService {
     boolean removeById(final String id) throws IOException;
 
     boolean removeByUsername(final String username) throws IOException;
+
+    boolean disableUser(final String username) throws IOException;
+
+    boolean enableUser(final String username) throws IOException;
 
 }

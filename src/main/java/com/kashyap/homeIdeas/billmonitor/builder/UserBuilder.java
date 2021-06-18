@@ -1,7 +1,11 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
+import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
-import com.kashyap.homeIdeas.billmonitor.model.UserRole;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Set;
 
 public class UserBuilder {
 
@@ -11,38 +15,64 @@ public class UserBuilder {
         this.user = new User();
     }
 
+    public UserBuilder setId(String id) {
+        if (StringUtils.isNotBlank(id)) {
+            this.user.setId(id);
+        }
+        return this;
+    }
+
     public UserBuilder setFirstname(String firstname) {
-        this.user.setFirstname(firstname);
+        if (StringUtils.isNotBlank(firstname)) {
+            this.user.setFirstname(firstname);
+        }
         return this;
     }
 
     public UserBuilder setLastname(String lastname) {
-        this.user.setLastname(lastname);
+        if (StringUtils.isNotBlank(lastname)) {
+            this.user.setLastname(lastname);
+        }
         return this;
     }
 
     public UserBuilder setUsername(String username) {
-        this.user.setUsername(username);
+        if (StringUtils.isNotBlank(username)) {
+            this.user.setUsername(username);
+        }
         return this;
     }
 
     public UserBuilder setPassword(String password) {
-        this.user.setPassword(password);
+        if (StringUtils.isNotBlank(password)) {
+            this.user.setPassword(password);
+        }
         return this;
     }
 
     public UserBuilder setEmail(String email) {
-        this.user.setEmail(email);
+        if (StringUtils.isNotBlank(email)) {
+            this.user.setEmail(email);
+        }
         return this;
     }
 
-    public UserBuilder setMobileNo(long mobileNo) {
-        this.user.setMobileNo(mobileNo);
+    public UserBuilder setMobileNo(Long mobileNo) {
+        if (mobileNo != null) {
+            this.user.setMobileNo(mobileNo);
+        }
         return this;
     }
 
-    public UserBuilder setRole(UserRole role) {
-        this.user.setRole(role);
+    public UserBuilder setAuthorities(Set<Role> authorities) {
+        if (CollectionUtils.isNotEmpty(authorities)) {
+            this.user.setAuthorities(authorities);
+        }
+        return this;
+    }
+
+    public UserBuilder setEnabled(boolean enabled) {
+        this.user.setEnabled(enabled);
         return this;
     }
 
