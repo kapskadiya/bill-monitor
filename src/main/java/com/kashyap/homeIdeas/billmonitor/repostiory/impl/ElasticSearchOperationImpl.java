@@ -22,7 +22,6 @@ public class ElasticSearchOperationImpl implements ElasticSearchOperation {
     @Override
     public boolean removeById(final String id) throws IOException {
         final DeleteRequest request = new DeleteRequest("user", id);
-
         final DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
 
         return response.status().getStatus() > 0;
@@ -34,7 +33,6 @@ public class ElasticSearchOperationImpl implements ElasticSearchOperation {
         request.setQuery(new TermQueryBuilder("username", username));
 
         final BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
-
         return response.getDeleted() > 0;
     }
 }

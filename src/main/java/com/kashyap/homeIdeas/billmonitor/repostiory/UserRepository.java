@@ -23,5 +23,4 @@ public interface UserRepository extends ElasticsearchRepository<User, String>, U
     @Override
     void deleteById(String username);
 
-
 }

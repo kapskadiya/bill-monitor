@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -37,11 +36,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(username -> userRepo
-                .findByUsername(username)
-                .orElseThrow(
-                        () -> new UsernameNotFoundException(String.format("User: %s, not found", username))
-                ));
+        auth.userDetailsService(username ->
+                userRepo
+                        .findByUsername(username)
+                        .orElseThrow(
+                                () -> new UsernameNotFoundException(
+                                        String.format("User: %s, not found", username)
+                                )
+                        )
+        );
     }
 
     @Override
@@ -78,7 +81,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 jwtTokenFilter,
                 UsernamePasswordAuthenticationFilter.class
         );
-
     }
 
     @Bean

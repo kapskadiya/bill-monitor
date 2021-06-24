@@ -5,6 +5,8 @@ import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,16 +20,16 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
     @Autowired
     private UserRepository userRepo;
 
     @Override
     public boolean save(final User user) {
-
         if (user == null) {
             return false;
         }
-
         return (userRepo.save(user) != null);
     }
 
@@ -38,19 +40,16 @@ public class UserServiceImpl implements UserService {
         }
 
         final User existingUser = this.getByUsername(user.getUsername());
-
         if (existingUser == null) {
             return false;
         }
 
         this.fillUser(existingUser, user);
-
         return (userRepo.save(existingUser) != null);
     }
 
     @Override
     public User getById(String id) {
-
         validateString(id);
 
         final Optional<User> opUser = userRepo.findById(id);
@@ -70,7 +69,6 @@ public class UserServiceImpl implements UserService {
         validateString(firstname);
 
         final List<User> userList = userRepo.findByFirstname(firstname);
-
         return userList == null ? new ArrayList<>() : userList ;
     }
 
@@ -79,7 +77,6 @@ public class UserServiceImpl implements UserService {
         validateString(lastname);
 
         final List<User> userList = userRepo.findByLastname(lastname);
-
         return userList == null ? new ArrayList<>() : userList;
     }
 
@@ -114,6 +111,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateString(final String str) {
         if (StringUtils.isBlank(str)) {
+            log.error("Please add a valid ID. {}",str);
             throw new NullPointerException("Please add a valid ID.");
         }
     }
@@ -122,14 +120,18 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         return userRepo.findByUsername(username)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException(String.format("User with username - %s, not found", username)));
+                        () -> new UsernameNotFoundException(
+                                String.format("User with username - %s, not found", username)
+                        )
+                );
     }
 
     @Override
     public void upsert(final User user) throws IOException {
-        if (user != null) {
-            userRepo.upsert(user);
+        if (user == null) {
+            return;
         }
+        userRepo.upsert(user);
     }
 
     private void fillUser(final User existingUser, final User newUser) {
@@ -148,7 +150,6 @@ public class UserServiceImpl implements UserService {
         if (CollectionUtils.isNotEmpty(newUser.getAuthorities())) {
             existingUser.setAuthorities(newUser.getAuthorities());
         }
-
     }
 
 

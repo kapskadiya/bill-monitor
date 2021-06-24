@@ -51,12 +51,11 @@ public class JWTTokenFilter extends OncePerRequestFilter {
                 .orElse(null);
 
 
-        UsernamePasswordAuthenticationToken authentication =
+        final UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        Optional
-                                .ofNullable(userDetails)
+                        Optional.ofNullable(userDetails)
                                 .map(UserDetails::getAuthorities)
                                 .orElse(List.of())
                 );
@@ -64,7 +63,6 @@ public class JWTTokenFilter extends OncePerRequestFilter {
         authentication.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
         );
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(httpServletRequest,httpServletResponse);

@@ -2,13 +2,14 @@ package com.kashyap.homeIdeas.billmonitor.config.security;
 
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
-
+import io.jsonwebtoken.UnsupportedJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -16,11 +17,12 @@ import java.util.Date;
 @Component
 public class JWTTokenUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(JWTTokenUtil.class);
+
     private final String jwtSecret = "zdtlD3JK56m6wTTgsNFhqzjqP";
     private final String jwtIssuer = "com.kashyap.homeIdeas";
 
     public String generateAccessToken(User user) {
-
         return Jwts.builder()
                 .setSubject(String.format("%s,%s", user.getId(), user.getUsername()))
                 .setIssuer(jwtIssuer)
@@ -31,7 +33,7 @@ public class JWTTokenUtil {
     }
 
     public String getUserId(String token) {
-        Claims claims = Jwts.parser()
+        final Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
@@ -40,7 +42,7 @@ public class JWTTokenUtil {
     }
 
     public String getUsername(String token) {
-        Claims claims = Jwts.parser()
+        final Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
@@ -49,7 +51,7 @@ public class JWTTokenUtil {
     }
 
     public Date getExpirationDate(String token) {
-        Claims claims = Jwts.parser()
+        final Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
@@ -62,20 +64,15 @@ public class JWTTokenUtil {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (SignatureException ex) {
-            System.out.println("Invalid JWT signature - "+ ex.getMessage());
-//            logger.error("Invalid JWT signature - {}", ex.getMessage());
+            log.error("Invalid JWT signature - {}", ex.getMessage());
         } catch (MalformedJwtException ex) {
-            System.out.println("Invalid JWT token - "+ ex.getMessage());
-//            logger.error("Invalid JWT token - {}", ex.getMessage());
+            log.error("Invalid JWT token - {}", ex.getMessage());
         } catch (ExpiredJwtException ex) {
-            System.out.println("Expired JWT token - "+ ex.getMessage());
-//            logger.error("Expired JWT token - {}", ex.getMessage());
+            log.error("Expired JWT token - {}", ex.getMessage());
         } catch (UnsupportedJwtException ex) {
-            System.out.println("Unsupported JWT token - "+ ex.getMessage());
-//            logger.error("Unsupported JWT token - {}", ex.getMessage());
+            log.error("Unsupported JWT token - {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            System.out.println("JWT claims string is empty - "+ ex.getMessage());
-//            logger.error("JWT claims string is empty - {}", ex.getMessage());
+            log.error("JWT claims string is empty - {}", ex.getMessage());
         }
         return false;
     }

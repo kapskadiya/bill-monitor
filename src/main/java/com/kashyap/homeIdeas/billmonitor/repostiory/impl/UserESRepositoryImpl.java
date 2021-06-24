@@ -6,7 +6,6 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -20,10 +19,8 @@ public class UserESRepositoryImpl extends ElasticSearchOperationImpl implements 
 
     @Override
     public boolean disableUser(final String username) throws IOException {
-
         final UpdateRequest updateRequest = new UpdateRequest("user", username);
         updateRequest.doc("enabled", false);
-
         final UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
 
         return updateResponse.getGetResult().isExists();
@@ -33,7 +30,6 @@ public class UserESRepositoryImpl extends ElasticSearchOperationImpl implements 
     public boolean enableUser(final String username) throws IOException {
         final UpdateRequest updateRequest = new UpdateRequest("user", username);
         updateRequest.doc("enabled", true);
-
         final UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
 
         return updateResponse.getGetResult().isExists();
