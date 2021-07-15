@@ -13,6 +13,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bill-monitor</name>
 	<description>Bill monitor is a analysis and bills maintaining web application</description>
+
+	<developers>
+		<developer>
+			<name>Kashyap Kadiya</name>
+			<email>kapskadiya@gmail.com</email>
+		</developer>
+	</developers>
+
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -63,6 +71,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>4.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.5.9</version>
 		</dependency>
 
 	</dependencies>

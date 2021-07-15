@@ -2,6 +2,7 @@ package com.kashyap.homeIdeas.billmonitor.config.security;
 
 import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -33,6 +34,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JWTTokenFilter jwtTokenFilter;
+
+    @Value("${springdoc.api-docs.path}")
+    private String restApiDocPath;
+    @Value("${springdoc.swagger-ui.path}")
+    private String swaggerPath;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -73,6 +79,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Set permissions on endpoints
         http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers(String.format("%s/**", restApiDocPath)).permitAll()
+                .antMatchers(String.format("%s/**", swaggerPath)).permitAll()
                 .antMatchers("/rest/auth/login").permitAll()
                 .anyRequest().authenticated();
 
