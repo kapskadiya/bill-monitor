@@ -12,23 +12,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    @Bean
-    public GroupedOpenApi userApiGroup() {
-        return GroupedOpenApi
-                .builder()
-                .group("user")
-                .pathsToMatch("/**/user/**")
-                .build();
-    }
-
-    @Bean
-    public GroupedOpenApi authApiGroup() {
-        return GroupedOpenApi
-                .builder()
-                .group("auth")
-                .pathsToMatch("/**/auth/**")
-                .build();
-    }
+//    @Bean
+//    public GroupedOpenApi userApiGroup() {
+//        return GroupedOpenApi
+//                .builder()
+//                .group("user")
+//                .pathsToMatch("/**/user/**")
+//                .build();
+//    }
+//
+//    @Bean
+//    public GroupedOpenApi authApiGroup() {
+//        return GroupedOpenApi
+//                .builder()
+//                .group("auth")
+//                .pathsToMatch("/**/auth/**")
+//                .build();
+//    }
 
     @Bean
     public OpenAPI apiInfo() {

@@ -1,56 +1,26 @@
-package com.kashyap.homeIdeas.billmonitor.model;
+package com.kashyap.homeIdeas.billmonitor.dto;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.ReadOnlyProperty;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-@Document(indexName = "bill")
-public class Bill implements Serializable {
+public class BillDto {
 
-    @Id
-    @ReadOnlyProperty
-    private String id;
-
-    @Field(type = FieldType.Text)
     private String orgName;
-
-    @Field(type = FieldType.Text)
     private String customerName;
-
-    @Field(type = FieldType.Text)
-    private BillType type;
-
-    @Field(type = FieldType.Integer)
+    private String type;
     private int amountToBePay;
 
-    @Field(type = FieldType.Date)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date issueDate;
 
-    @Field(type = FieldType.Date)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date dueDate;
 
-    @Field(type = FieldType.Nested)
-    private PaymentDetail paymentDetail;
-
-    @Field(type = FieldType.Integer)
-    private int billingDurationInDays;
-
-    @Field(type = FieldType.Nested)
+    private PaymentDetailDto paymentDetail;
+    private Integer billingDurationInDays;
     private Map<String, Object> metadata;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getOrgName() {
         return orgName;
@@ -68,11 +38,11 @@ public class Bill implements Serializable {
         this.customerName = customerName;
     }
 
-    public BillType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(BillType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -100,19 +70,19 @@ public class Bill implements Serializable {
         this.dueDate = dueDate;
     }
 
-    public PaymentDetail getPaymentDetail() {
+    public PaymentDetailDto getPaymentDetail() {
         return paymentDetail;
     }
 
-    public void setPaymentDetail(PaymentDetail paymentDetail) {
+    public void setPaymentDetail(PaymentDetailDto paymentDetail) {
         this.paymentDetail = paymentDetail;
     }
 
-    public int getBillingDurationInDays() {
+    public Integer getBillingDurationInDays() {
         return billingDurationInDays;
     }
 
-    public void setBillingDurationInDays(int billingDurationInDays) {
+    public void setBillingDurationInDays(Integer billingDurationInDays) {
         this.billingDurationInDays = billingDurationInDays;
     }
 

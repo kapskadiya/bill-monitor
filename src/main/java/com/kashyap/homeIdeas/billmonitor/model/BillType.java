@@ -5,6 +5,23 @@ public enum BillType {
     DTH,
     GAS,
     MOBILE,
-    ENTERTAINMENT,
-    BROADBAND
+    BROADBAND;
+
+    public static BillType getBillType(String type) {
+
+        final String typeInLowercase = type.toLowerCase();
+
+        switch (typeInLowercase) {
+            case "gas":
+                return BillType.GAS;
+            case "dth":
+                return BillType.DTH;
+            case "mobile":
+                return BillType.MOBILE;
+            case "broadband":
+                return BillType.BROADBAND;
+            default:
+                return BillType.ELECTRICITY;
+        }
+    }
 }
