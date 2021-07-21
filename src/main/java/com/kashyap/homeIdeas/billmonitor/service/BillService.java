@@ -4,5 +4,7 @@ import com.kashyap.homeIdeas.billmonitor.model.Bill;
 
 public interface BillService {
 
-    boolean save(Bill bill);
+    String save(Bill bill);
+
+    boolean isExist(String billId);
 }

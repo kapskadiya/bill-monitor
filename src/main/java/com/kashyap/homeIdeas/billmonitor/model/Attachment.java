@@ -8,7 +8,7 @@ public class Attachment implements Serializable {
     private String type;
     private long size;
     private String extension;
-    private String fileLocation;
+    private String filePath;
 
     public String getId() {
         return id;
@@ -42,11 +42,11 @@ public class Attachment implements Serializable {
         this.extension = extension;
     }
 
-    public String getFileLocation() {
-        return fileLocation;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFileLocation(String fileLocation) {
-        this.fileLocation = fileLocation;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

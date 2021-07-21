@@ -3,9 +3,10 @@ package com.kashyap.homeIdeas.billmonitor.service.impl;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;
 import com.kashyap.homeIdeas.billmonitor.service.BillService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class BillServiceImpl implements BillService {
@@ -13,10 +14,17 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private BillRepository repository;
 
-    public boolean save(Bill bill) {
+    @Override
+    public String save(Bill bill) {
         final Bill savedBill = repository.save(bill);
 
-        return StringUtils.isNotBlank(bill.getId());
+        return bill.getId();
+    }
+
+    @Override
+    public boolean isExist(String billId) {
+        final Optional<Bill> bill = repository.findById(billId);
+        return bill.isPresent();
     }
 
 }
