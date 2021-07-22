@@ -9,6 +9,7 @@ public class BillDto {
 
     private String orgName;
     private String customerName;
+    private String customerId;
     private String type;
     private int amountToBePay;
 
@@ -92,5 +93,13 @@ public class BillDto {
 
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

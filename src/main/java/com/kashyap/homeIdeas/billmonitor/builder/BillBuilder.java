@@ -84,6 +84,13 @@ public class BillBuilder {
         return this;
     }
 
+    public BillBuilder setCustomerId(String customerId) {
+        if (StringUtils.isNotBlank(customerId)) {
+            this.bill.setCustomerId(customerId);
+        }
+        return this;
+    }
+
     public Bill build() {
         return this.bill;
     }

@@ -15,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/rest/bill")
@@ -68,6 +73,52 @@ public class BillResource {
         return ResponseEntity.ok().body(billId);
     }
 
+    @GetMapping(value = "/get/id/{billId)")
+    public ResponseEntity<Bill> getById(@PathVariable String billId) {
+        if (StringUtils.isBlank(billId)) {
+            log.error("BillId is empty");
+            return ResponseEntity.badRequest().body(new Bill());
+        }
+        return ResponseEntity.ok().body(service.getById(billId));
+    }
+
+    @GetMapping(value = "/get/customerId/{customerId}")
+    public ResponseEntity<List<Bill>> getByCustomerId(@PathVariable String customerId) {
+        if (StringUtils.isBlank(customerId)) {
+            log.error("CustomerId is empty");
+            return ResponseEntity.badRequest().body(new ArrayList<>());
+        }
+        return ResponseEntity.ok().body(service.getByCustomerId(customerId));
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<List<Bill>> getByCustomerName(@PathVariable String customerName) {
+        if (StringUtils.isBlank(customerName)) {
+            log.error("CustomerId is empty");
+            return ResponseEntity.badRequest().body(new ArrayList<>());
+        }
+        return ResponseEntity.ok().body(service.getByCustomerName(customerName));
+    }
+
+
+    public ResponseEntity<String> update(@RequestBody BillDto dto) {
+        if (dto == null) {
+            log.error("dto is empty");
+            return ResponseEntity.badRequest().body("values are empty");
+        }
+        final Bill bill = this.prepareBill(dto);
+        return ResponseEntity.ok().body(service.update(bill));
+    }
+
+    @DeleteMapping(value = "/remove/id/{billId}")
+    public void remove(@PathVariable String billId) {
+        if (StringUtils.isBlank(billId)) {
+            log.error("BillId is empty");
+            return;
+        }
+        service.remove(billId);
+    }
+
     private Bill prepareBill(BillDto dto) {
         final PaymentDetailDto paymentDetailDto = dto.getPaymentDetail();
         final PaymentDetail paymentDetail = new PaymentDetailBuilder()
@@ -80,6 +131,7 @@ public class BillResource {
         return new BillBuilder()
                 .setOrgName(dto.getOrgName())
                 .setCustomerName(dto.getCustomerName())
+                .setCustomerId(dto.getCustomerId())
                 .setType(BillType.getBillType(dto.getType()))
                 .setAmountToBePay(dto.getAmountToBePay())
                 .setIssueDate(dto.getIssueDate())

@@ -3,13 +3,11 @@ package com.kashyap.homeIdeas.billmonitor.repostiory;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface BillRepository extends ElasticsearchRepository<Bill, String> {
 
-    @Override
-    Bill save(Bill bill);
+    List<Bill> findByCustomerId(String customerId);
 
-    @Override
-    Optional<Bill> findById(String billId);
+    List<Bill> findByCustomerName(String customerName);
 }

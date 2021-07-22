@@ -24,6 +24,9 @@ public class Bill implements Serializable {
     private String customerName;
 
     @Field(type = FieldType.Text)
+    private String customerId;
+
+    @Field(type = FieldType.Text)
     private BillType type;
 
     @Field(type = FieldType.Integer)
@@ -122,5 +125,13 @@ public class Bill implements Serializable {
 
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }
