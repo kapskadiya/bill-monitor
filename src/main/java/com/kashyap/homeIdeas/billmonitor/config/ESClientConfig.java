@@ -18,6 +18,7 @@ public class ESClientConfig extends AbstractElasticsearchConfiguration {
         final ClientConfiguration config = ClientConfiguration
                 .builder()
                 .connectedTo("localhost:9200")
+                .withBasicAuth("elastic", "admin123")
                 .build();
 
         return RestClients.create(config).rest();

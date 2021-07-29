@@ -1,6 +1,5 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
-import com.kashyap.homeIdeas.billmonitor.model.Attachment;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;

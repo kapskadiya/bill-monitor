@@ -3,12 +3,14 @@ package com.kashyap.homeIdeas.billmonitor.service.impl;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;
 import com.kashyap.homeIdeas.billmonitor.service.BillService;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,5 +112,16 @@ public class BillServiceImpl implements BillService {
             return;
         }
         repository.deleteById(billId);
+    }
+
+    @Override
+    public List<Bill> getAll(){
+        final Iterable<Bill> bills = repository.findAll();
+        return IterableUtils.toList(bills);
+    }
+
+    @Override
+    public boolean bulkSave(List<Bill> billList) throws IOException {
+        return repository.bulkInsert(billList);
     }
 }

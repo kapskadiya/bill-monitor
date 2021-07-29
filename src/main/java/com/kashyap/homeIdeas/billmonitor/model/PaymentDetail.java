@@ -8,6 +8,7 @@ public class PaymentDetail implements Serializable {
     private String method;
     private String platform;
     private String payBy;
+    private PaymentStatus status;
 
     public String getId() {
         return id;
@@ -39,5 +40,13 @@ public class PaymentDetail implements Serializable {
 
     public void setPayBy(String payBy) {
         this.payBy = payBy;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
     }
 }

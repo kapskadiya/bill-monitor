@@ -1,6 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
+import com.kashyap.homeIdeas.billmonitor.model.PaymentStatus;
 import org.apache.commons.lang3.StringUtils;
 
 public class PaymentDetailBuilder {
@@ -37,6 +38,15 @@ public class PaymentDetailBuilder {
             this.paymentDetail.setPayBy(payBy);
         }
         return this;
+    }
+
+    public  PaymentDetailBuilder setStatus(String status) {
+        if (StringUtils.isNotBlank(status)) {
+            final PaymentStatus paymentStatus = PaymentStatus.getPaymentStatus(status);
+            this.paymentDetail.setStatus(paymentStatus);
+        }
+        return this;
+
     }
 
     public PaymentDetail build() {

@@ -10,6 +10,9 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - xpack.security.audit.enabled=true
+      - ELASTIC_PASSWORD=admin123
 #    volumes:
 #      - D:\Personal-KS\Project\esdata:/usr/share/elasticsearch/data
     ports:
@@ -23,6 +26,8 @@ services:
     image: docker.elastic.co/kibana/kibana:7.13.1
     environment:
       - ELASTICSEARCH_HOSTS=http://es7:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=admin123
     ports:
       - "5601:5601"
     depends_on:

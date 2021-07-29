@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 import java.util.List;
 
-public interface BillRepository extends ElasticsearchRepository<Bill, String> {
+public interface BillRepository extends ElasticsearchRepository<Bill, String>, BillCustomRepository {
 
     List<Bill> findByCustomerId(String customerId);
 

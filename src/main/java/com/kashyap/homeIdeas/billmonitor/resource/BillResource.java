@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/rest/bill")
@@ -42,11 +43,17 @@ public class BillResource {
     @Autowired
     private AttachmentService attachmentService;
 
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/save")
     public ResponseEntity<String> save(@RequestBody BillDto dto) {
         final Bill bill = this.prepareBill(dto);
 
         return ResponseEntity.ok().body(service.save(bill));
+    }
+
+    @PostMapping(value = "/bulk/save")
+    public ResponseEntity<Boolean> bulkSave(@RequestBody List<BillDto> dtoList) throws IOException {
+        final List<Bill> billLIst = dtoList.stream().map(this::prepareBill).collect(Collectors.toList());
+        return ResponseEntity.ok().body(service.bulkSave(billLIst));
     }
 
     @PostMapping(value = "/add/withAttachment")
@@ -71,6 +78,11 @@ public class BillResource {
             }
         }
         return ResponseEntity.ok().body(billId);
+    }
+
+    @GetMapping(value = "/get/all")
+    public ResponseEntity<List<Bill>> getAll() {
+        return ResponseEntity.ok().body(service.getAll());
     }
 
     @GetMapping(value = "/get/id/{billId)")
@@ -122,6 +134,7 @@ public class BillResource {
     private Bill prepareBill(BillDto dto) {
         final PaymentDetailDto paymentDetailDto = dto.getPaymentDetail();
         final PaymentDetail paymentDetail = new PaymentDetailBuilder()
+                .setStatus(paymentDetailDto.getStatus())
                 .setId(paymentDetailDto.getId())
                 .setMethod(paymentDetailDto.getMethod())
                 .setPayBy(paymentDetailDto.getPayBy())

@@ -2,6 +2,7 @@ package com.kashyap.homeIdeas.billmonitor.service;
 
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface BillService {
@@ -19,4 +20,8 @@ public interface BillService {
     String update(Bill newBill);
 
     void remove(String billId);
+
+    List<Bill> getAll();
+
+    boolean bulkSave(List<Bill> billList) throws IOException;
 }

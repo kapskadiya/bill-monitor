@@ -3,6 +3,7 @@ package com.kashyap.homeIdeas.billmonitor.dto;
 public class PaymentDetailDto {
 
     private String id;
+    private String status;
     private String method;
     private String platform;
     private String payBy;
@@ -37,5 +38,13 @@ public class PaymentDetailDto {
 
     public void setPayBy(String payBy) {
         this.payBy = payBy;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
