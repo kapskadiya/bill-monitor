@@ -4,13 +4,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class UserDto {
 
     private String firstname;
     private String lastname;
+
+    @NotEmpty
+    @Size(min = 2, message = "user name should have at least 2 characters")
     private String username;
+
+    @NotEmpty
+    @Size(min = 8, message = "password should have at least 8 characters")
     private String password;
+
+    @Email
     private String email;
+
     private Long mobileNo;
     private String role;
     private boolean enabled;

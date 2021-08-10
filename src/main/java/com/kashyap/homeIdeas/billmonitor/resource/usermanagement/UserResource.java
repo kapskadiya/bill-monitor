@@ -1,6 +1,8 @@
-package com.kashyap.homeIdeas.billmonitor.resource;
+package com.kashyap.homeIdeas.billmonitor.resource.usermanagement;
 
 import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
+import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
+import com.kashyap.homeIdeas.billmonitor.dto.Failure;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
@@ -31,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/rest/user")
+@RequestMapping("/rest/usermanagement/user")
 public class UserResource {
 
     private static final Logger log = LoggerFactory.getLogger(UserResource.class);
@@ -50,37 +52,41 @@ public class UserResource {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping(value = "/save")
-    public ResponseEntity<String> save(@RequestBody final UserDto dto) {
-        // TODO: validate dto.
-        final Map<String, String> invalidFieldsMap = this.mandatoryFieldsCheck(dto);
-
-        if (MapUtils.isEmpty(invalidFieldsMap)) {
-            return ResponseEntity.badRequest()
-                    .body("there are multiple validation exceptions.");
-        }
+    @PostMapping(value = "/add")
+    public ApplicationResponse save(@RequestBody UserDto dto) {
 
         final User user = this.buildUser(dto);
-        final String result = userService.save(user) ? "User saved." : "User doesn't saved.";
+        final ApplicationResponse response = new ApplicationResponse();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result) ;
+        try {
+            userService.save(user);
+        } catch (IllegalArgumentException iae) {
+            final Failure failure = new Failure();
+            failure.setReason(iae.getCause().getMessage());
+            failure.setException(iae.toString());
+            response.setFailure(failure);
+            return response;
+        }
+        response.setSuccess("isSaved", true);
+        response.setSuccess("message", "User saved.");
+        return response;
     }
 
     @GetMapping(value = "/id/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable final String id) {
+    public ResponseEntity<UserDto> getById(@PathVariable String id) {
         final UserDto dto = new UserDto().buildDto(userService.getById(id));
         return ResponseEntity.ok().body(dto);
     }
 
     @GetMapping(value = "/username/{username}")
-    public ResponseEntity<UserDto> getByUsername(@PathVariable final String username) {
+    public ResponseEntity<UserDto> getByUsername(@PathVariable String username) {
         final UserDto dto = new UserDto().buildDto(userService.getByUsername(username));
         return ResponseEntity.ok().body(dto);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/disable")
-    public ResponseEntity<String> disableUser(@PathParam(value = "username") final String username) throws IOException {
+    public ResponseEntity<String> disableUser(@PathParam(value = "username") String username) throws IOException {
         if (StringUtils.isBlank(username)) {
             return ResponseEntity.badRequest().body("User can't be empty");
         }
@@ -92,7 +98,7 @@ public class UserResource {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/enable")
-    public ResponseEntity<String> enableUser(@PathParam(value = "username") final String username) throws IOException {
+    public ResponseEntity<String> enableUser(@PathParam(value = "username") String username) throws IOException {
         if (StringUtils.isBlank(username)) {
             return ResponseEntity.badRequest().body("User can't be empty");
         }
@@ -120,7 +126,7 @@ public class UserResource {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/username/{username}")
-    public ResponseEntity<String> remove(@PathVariable final String username) {
+    public ResponseEntity<String> remove(@PathVariable String username) {
         String result = StringUtils.EMPTY;
         try {
             result = userService.removeByUsername(username) ? "User is successfully deleted." : "User is not deleted.";
@@ -130,7 +136,7 @@ public class UserResource {
         return ResponseEntity.ok().body(result);
     }
 
-    private Map<String, String> mandatoryFieldsCheck(final UserDto dto) {
+    private Map<String, String> mandatoryFieldsCheck(UserDto dto) {
         final Map<String, String> invalidateFieldsMap = new HashMap<>();
 
         if (StringUtils.isBlank(dto.getUsername())) {
@@ -148,7 +154,7 @@ public class UserResource {
         return invalidateFieldsMap;
     }
 
-    private User buildUser(final UserDto dto) {
+    private User buildUser(UserDto dto) {
         final String role = "admin".equals(dto.getRole().toLowerCase())
                 ? Role.ADMIN : Role.USER;
 

@@ -26,11 +26,11 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepo;
 
     @Override
-    public boolean save(final User user) {
+    public void save(User user) {
         if (user == null) {
-            return false;
+            throw new IllegalArgumentException("user object is null.");
         }
-        return (userRepo.save(user) != null);
+        userRepo.save(user);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         validateString(username);
 
         final Optional<User> opUser = userRepo.findByUsername(username);
-        return opUser.orElse(new User());
+        return opUser.orElse(null);
     }
 
     @Override
@@ -86,15 +86,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean removeById(String id) throws IOException {
+    public void removeById(String id) throws IOException {
         validateString(id);
-        return userRepo.removeById(id);
+        userRepo.deleteById(id);
     }
 
     @Override
     public boolean removeByUsername(final String username) throws IOException {
         validateString(username);
-        return userRepo.removeByUsername(username);
+//        return userRepo.removeByUsername(username);
+        return true;
     }
 
     @Override
@@ -131,7 +132,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return;
         }
-        userRepo.upsert(user);
+ //       userRepo.upsert(user);
     }
 
     private void fillUser(final User existingUser, final User newUser) {

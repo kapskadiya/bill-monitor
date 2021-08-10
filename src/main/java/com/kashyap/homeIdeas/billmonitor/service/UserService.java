@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    boolean save(final User user);
+    void save(User user);
 
     void upsert(final User user) throws IOException;
 
@@ -24,7 +24,7 @@ public interface UserService extends UserDetailsService {
 
     List<User> search(final String keyword);
 
-    boolean removeById(final String id) throws IOException;
+    void removeById(final String id) throws IOException;
 
     boolean removeByUsername(final String username) throws IOException;
 
