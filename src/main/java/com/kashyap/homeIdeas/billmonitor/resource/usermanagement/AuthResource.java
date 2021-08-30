@@ -6,6 +6,7 @@ import com.kashyap.homeIdeas.billmonitor.dto.AuthRequest;
 import com.kashyap.homeIdeas.billmonitor.dto.Failure;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
+import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class AuthResource {
 
             final User loggedInUser = (User) authentication.getPrincipal();
             response.setSuccess("token", jwtTokenUtil.generateAccessToken(loggedInUser));
+            response.setSuccess("user", UserUtil.buildDto(loggedInUser));
 
             return response;
         } catch (BadCredentialsException bce) {

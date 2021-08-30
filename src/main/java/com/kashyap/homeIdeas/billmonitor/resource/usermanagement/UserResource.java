@@ -1,12 +1,11 @@
 package com.kashyap.homeIdeas.billmonitor.resource.usermanagement;
 
-import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
 import com.kashyap.homeIdeas.billmonitor.dto.Failure;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
-import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
+import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,16 +28,12 @@ import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/rest/usermanagement/user")
 public class UserResource {
 
     private static final Logger log = LoggerFactory.getLogger(UserResource.class);
-
-    @Autowired
-    private PasswordEncoder encoder;
 
     @Autowired
     private UserService userService;
@@ -51,11 +45,10 @@ public class UserResource {
         return "Welcome to the user rest module.";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/add")
     public ApplicationResponse save(@RequestBody UserDto dto) {
 
-        final User user = this.buildUser(dto);
+        final User user = UserUtil.buildUser(dto);
         final ApplicationResponse response = new ApplicationResponse();
 
         try {
@@ -74,13 +67,13 @@ public class UserResource {
 
     @GetMapping(value = "/id/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable String id) {
-        final UserDto dto = new UserDto().buildDto(userService.getById(id));
+        final UserDto dto = UserUtil.buildDto(userService.getById(id));
         return ResponseEntity.ok().body(dto);
     }
 
     @GetMapping(value = "/username/{username}")
     public ResponseEntity<UserDto> getByUsername(@PathVariable String username) {
-        final UserDto dto = new UserDto().buildDto(userService.getByUsername(username));
+        final UserDto dto = UserUtil.buildDto(userService.getByUsername(username));
         return ResponseEntity.ok().body(dto);
     }
 
@@ -118,7 +111,7 @@ public class UserResource {
                     .body("there are multiple validation exceptions.");
         }
 
-        final User user = this.buildUser(dto);
+        final User user = UserUtil.buildUser(dto);
         final String result = userService.update(user) ? "User updated." : "User doesn't updated.";
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -152,23 +145,6 @@ public class UserResource {
             invalidateFieldsMap.put("Email", "Email is required.");
         }
         return invalidateFieldsMap;
-    }
-
-    private User buildUser(UserDto dto) {
-        final String role = "admin".equals(dto.getRole().toLowerCase())
-                ? Role.ADMIN : Role.USER;
-
-        return new UserBuilder()
-                .setId(dto.getUsername())
-                .setFirstname(dto.getFirstname())
-                .setLastname(dto.getLastname())
-                .setEmail(dto.getEmail())
-                .setUsername(dto.getUsername())
-                .setPassword(encoder.encode(dto.getPassword()))
-                .setMobileNo(dto.getMobileNo())
-                .setAuthorities(Set.of(new Role(role)))
-                .build();
-
     }
 
 }

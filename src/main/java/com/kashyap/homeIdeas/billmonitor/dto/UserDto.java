@@ -95,15 +95,4 @@ public class UserDto {
         this.enabled = enabled;
     }
 
-    public UserDto buildDto(final User user) {
-        this.setFirstname(user.getFirstname());
-        this.setLastname(user.getLastname());
-        this.setUsername(user.getUsername());
-        this.setEmail(user.getEmail());
-        this.setMobileNo(user.getMobileNo());
-        this.setRole(user.getAuthorities().stream().findFirst().get().getAuthority());
-        this.setEnabled(user.isEnabled());
-
-        return this;
-    }
 }

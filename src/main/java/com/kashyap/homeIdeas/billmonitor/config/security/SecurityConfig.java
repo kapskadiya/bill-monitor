@@ -83,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(String.format("%s/**", restApiDocPath)).permitAll()
                 .antMatchers(String.format("%s/**", swaggerPath)).permitAll()
                 .antMatchers("/rest/**/login").permitAll()
+                .antMatchers("/rest/usermanagement/user/add").permitAll()
                 .anyRequest().authenticated();
 
         // Add JWT token filter
