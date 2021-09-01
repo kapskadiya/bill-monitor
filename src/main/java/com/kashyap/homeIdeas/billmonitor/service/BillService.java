@@ -1,6 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.service;
 
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,4 +25,6 @@ public interface BillService {
     List<Bill> getAll();
 
     boolean bulkSave(List<Bill> billList) throws IOException;
+
+    List<Bill> getByType(BillType type);
 }

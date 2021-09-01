@@ -1,8 +1,10 @@
 package com.kashyap.homeIdeas.billmonitor.service.impl;
 
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;
 import com.kashyap.homeIdeas.billmonitor.service.BillService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -123,5 +125,10 @@ public class BillServiceImpl implements BillService {
     @Override
     public boolean bulkSave(List<Bill> billList) throws IOException {
         return repository.bulkInsert(billList);
+    }
+
+    @Override
+    public List<Bill> getByType(BillType type) {
+        return repository.findByType(type);
     }
 }
