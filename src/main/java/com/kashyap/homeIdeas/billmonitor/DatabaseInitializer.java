@@ -18,10 +18,8 @@ public class DatabaseInitializer implements ApplicationListener<ApplicationReady
 
     private final List<String> firstnameList = List.of("Kashyap", "Sunil");
     private final List<String> lastnameList = List.of("Kadiya", "Sathwara");
-    private final List<String> usernameList = List.of("kashyapkadiya", "sunilsathwara");
     private final List<String> emailList = List.of("kapskadiya@gmail.com", "sunilsathwara@gmail.com");
-    private final List<String> roleList = List.of(Role.ADMIN, Role.USER);
-    private final List<Long> mobileNoList = List.of(9925035402L, 9925035401L);
+    private final List<String> roleList = List.of(Role.ADMIN.name(), Role.USER.name());
 
     @Autowired
     private UserService userService;
@@ -32,18 +30,15 @@ public class DatabaseInitializer implements ApplicationListener<ApplicationReady
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
 
-        for (int i = 0; i < usernameList.size(); i++) {
+        for (int i = 0; i < emailList.size(); i++) {
             final String password = "abc123_";
             User user = new UserBuilder()
-                    .setId(usernameList.get(i))
+                    .setId(emailList.get(i))
                     .setFirstname(firstnameList.get(i))
                     .setLastname(lastnameList.get(i))
-                    .setUsername(usernameList.get(i))
                     .setPassword(encoder.encode(password))
                     .setEmail(emailList.get(i))
-                    .setMobileNo(mobileNoList.get(i))
-                    .setAuthorities(Set.of(new Role(roleList.get(i))))
-                    .setEnabled(true)
+                    .setRole(Role.getRole(roleList.get(i)))
                     .build();
 
             userService.save(user);

@@ -15,31 +15,23 @@ public class UserUtil {
     private final static PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public static User buildUser(UserDto dto) {
-        final String role = "admin".equals(dto.getRole())
-                ? Role.ADMIN : Role.USER;
 
         return new UserBuilder()
-                .setId(dto.getUsername())
+                .setId(dto.getEmail())
                 .setFirstname(dto.getFirstname())
                 .setLastname(dto.getLastname())
                 .setEmail(dto.getEmail())
-                .setUsername(dto.getUsername())
                 .setPassword(encoder.encode(dto.getPassword()))
-                .setMobileNo(dto.getMobileNo())
-                .setAuthorities(Set.of(new Role(role)))
+                .setRole(Role.getRole(dto.getRole()))
                 .build();
-
     }
 
     public static UserDto buildDto(final User user) {
         final UserDto dto = new UserDto();
         dto.setFirstname(user.getFirstname());
         dto.setLastname(user.getLastname());
-        dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
-        dto.setMobileNo(user.getMobileNo());
-        dto.setRole(user.getAuthorities().stream().findFirst().get().getAuthority());
-        dto.setEnabled(user.isEnabled());
+        dto.setRole(user.getRole().name());
 
         return dto;
     }

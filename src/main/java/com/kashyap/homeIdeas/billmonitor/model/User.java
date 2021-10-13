@@ -7,11 +7,12 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Document(indexName = "user")
 public class User implements UserDetails {
@@ -26,23 +27,24 @@ public class User implements UserDetails {
     @Field(type = FieldType.Text)
     private String lastname;
 
-    @Field(type = FieldType.Text)
-    @Nullable
-    private String username;
-
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     @Nullable
     private String password;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String email;
 
-    @Field(type = FieldType.Long)
-    private Long mobileNo;
+    @Field(type = FieldType.Keyword)
+    private Role role;
 
-    private Set<Role> authorities = new HashSet<>();
+    @Field(type = FieldType.Text)
+    private String createdBy;
 
-    private boolean enabled = true;
+    @Field(type = FieldType.Text)
+    private String updatedBy;
+
+    @Field(type = FieldType.Boolean)
+    private boolean isDeleted;
 
     public String getId() {
         return id;
@@ -68,36 +70,40 @@ public class User implements UserDetails {
         this.lastname = lastname;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     @Override
-    public boolean isAccountNonExpired() {
-        return enabled;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return enabled;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return enabled;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        final List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.getRole().name()));
+        return authorities;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public void setPassword(String password) {
@@ -112,24 +118,35 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public Long getMobileNo() {
-        return mobileNo;
+    public Role getRole() {
+        return role;
     }
 
-    public void setMobileNo(Long mobileNo) {
-        this.mobileNo = mobileNo;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    @Override
-    public Set<Role> getAuthorities() {
-        return authorities;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setAuthorities(Set<Role> authorities) {
-        this.authorities = authorities;
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }

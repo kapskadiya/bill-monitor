@@ -10,9 +10,6 @@ import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,7 +38,7 @@ public class AuthResource {
     public ApplicationResponse login(@RequestBody AuthRequest authRequest) {
         final ApplicationResponse response = new ApplicationResponse();
 
-        final User user = userService.getByUsername(authRequest.getUsername());
+        final User user = userService.getById(authRequest.getEmail());
 
         if (user == null) {
             final Failure failure = new Failure();
@@ -52,7 +49,7 @@ public class AuthResource {
         }
 
         try {
-            final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword());
+            final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword());
             final Authentication authentication = authenticationManager.authenticate(token);
 
             final User loggedInUser = (User) authentication.getPrincipal();

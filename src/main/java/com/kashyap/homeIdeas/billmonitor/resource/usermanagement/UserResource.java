@@ -132,9 +132,6 @@ public class UserResource {
     private Map<String, String> mandatoryFieldsCheck(UserDto dto) {
         final Map<String, String> invalidateFieldsMap = new HashMap<>();
 
-        if (StringUtils.isBlank(dto.getUsername())) {
-            invalidateFieldsMap.put("Username", "Username is required.");
-        }
         if (StringUtils.isBlank(dto.getFirstname())) {
             invalidateFieldsMap.put("Firstname", "Firstname is required.");
         }

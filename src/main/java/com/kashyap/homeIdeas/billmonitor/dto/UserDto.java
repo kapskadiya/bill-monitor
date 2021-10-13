@@ -14,20 +14,16 @@ public class UserDto {
     private String firstname;
     private String lastname;
 
-    @NotEmpty
-    @Size(min = 2, message = "user name should have at least 2 characters")
-    private String username;
+    @Email
+    private String email;
 
     @NotEmpty
     @Size(min = 8, message = "password should have at least 8 characters")
     private String password;
 
-    @Email
-    private String email;
-
-    private Long mobileNo;
     private String role;
-    private boolean enabled;
+
+    private boolean isDeleted;
 
     public String getFirstname() {
         return firstname;
@@ -43,14 +39,6 @@ public class UserDto {
 
     public void setLastname(String lastname) {
         this.lastname = lastname.trim();
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username.trim();
     }
 
     @JsonIgnore
@@ -71,14 +59,6 @@ public class UserDto {
         this.email = email;
     }
 
-    public long getMobileNo() {
-        return mobileNo;
-    }
-
-    public void setMobileNo(Long mobileNo) {
-        this.mobileNo = mobileNo;
-    }
-
     public String getRole() {
         return role;
     }
@@ -87,12 +67,11 @@ public class UserDto {
         this.role = role.trim().toLowerCase();
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
-
 }

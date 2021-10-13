@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "firstName":{
+      "type": "text"
+    },
+    "lastName":{
+      "type": "text"
+    },
+    "email":{
+      "type": "keyword"
+    },
+    "password":{
+      "type": "keyword"
+    },
+    "role":{
+      "type": "keyword"
+    },
+    "createdBy":{
+      "type": "text"
+    },
+    "updatedBy":{
+      "type": "text"
+    },
+    "isDeleted": {
+      "type": "boolean"
+    }
+  }
+}

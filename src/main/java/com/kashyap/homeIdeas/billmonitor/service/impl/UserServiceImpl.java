@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
-        final User existingUser = this.getByUsername(user.getUsername());
+        final User existingUser = this.getById(user.getEmail());
         if (existingUser == null) {
             return false;
         }
@@ -118,16 +118,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        return userRepo.findByUsername(username)
-                .orElseThrow(
-                        () -> new UsernameNotFoundException(
-                                String.format("User with username - %s, not found", username)
-                        )
-                );
-    }
-
-    @Override
     public void upsert(final User user) throws IOException {
         if (user == null) {
             return;
@@ -145,12 +135,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isNotBlank(newUser.getEmail())) {
             existingUser.setEmail(newUser.getEmail());
         }
-        if (newUser.getMobileNo() != null) {
-            existingUser.setMobileNo(newUser.getMobileNo());
-        }
-        if (CollectionUtils.isNotEmpty(newUser.getAuthorities())) {
-            existingUser.setAuthorities(newUser.getAuthorities());
-        }
+
     }
 
 

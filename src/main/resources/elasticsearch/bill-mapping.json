@@ -1,0 +1,68 @@
+{
+  "properties": {
+    "userID":{
+      "type": "keyword"
+    },
+    "billType":{
+      "type": "keyword"
+    },
+    "issueDate":{
+      "type": "date",
+      "format": "date_optional_time||epoch_millis"
+    },
+    "expiryDate":{
+      "type": "date",
+      "format": "date_optional_time||epoch_millis"
+    },
+    "payDate":{
+      "type": "date",
+      "format": "date_optional_time||epoch_millis"
+    },
+    "totalAmount":{
+      "type": "integer"
+    },
+    "totalAmountAfterExpiry":{
+      "type": "integer"
+    },
+    "paymentDetail":{
+      "type": "nested",
+      "properties": {
+        "transactionID":{
+          "type": "keyword"
+        },
+        "transactionType":{
+          "type":"keyword"
+        },
+        "method":{
+          "type":"keyword"
+        },
+        "methodUniqueNumber":{
+          "type":"keyword"
+        },
+        "isSuccessful":{
+          "type":"boolean"
+        }
+      }
+    },
+    "createdBy":{
+      "type": "keyword"
+    },
+    "updatedBy":{
+      "type": "keyword"
+    },
+    "createdDate":{
+      "type": "date",
+      "format": "date_optional_time||epoch_millis"
+    },
+    "updatedDate":{
+      "type": "date",
+      "format": "date_optional_time||epoch_millis"
+    },
+    "isDeleted":{
+      "type": "boolean"
+    },
+    "extraInfo":{
+      "type": "nested"
+    }
+  }
+}

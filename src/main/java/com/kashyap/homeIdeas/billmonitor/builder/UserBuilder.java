@@ -36,13 +36,6 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder setUsername(String username) {
-        if (StringUtils.isNotBlank(username)) {
-            this.user.setUsername(username);
-        }
-        return this;
-    }
-
     public UserBuilder setPassword(String password) {
         if (StringUtils.isNotBlank(password)) {
             this.user.setPassword(password);
@@ -57,25 +50,12 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder setMobileNo(Long mobileNo) {
-        if (mobileNo != null) {
-            this.user.setMobileNo(mobileNo);
+    public UserBuilder setRole(Role role) {
+        if (role != null) {
+            this.user.setRole(role);
         }
         return this;
     }
-
-    public UserBuilder setAuthorities(Set<Role> authorities) {
-        if (CollectionUtils.isNotEmpty(authorities)) {
-            this.user.setAuthorities(authorities);
-        }
-        return this;
-    }
-
-    public UserBuilder setEnabled(boolean enabled) {
-        this.user.setEnabled(enabled);
-        return this;
-    }
-
     public User build() {
         return this.user;
     }
