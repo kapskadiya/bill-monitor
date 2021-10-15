@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         validateString(id);
 
         final Optional<User> opUser = userRepo.findById(id);
-        return opUser.orElse(new User());
+        return opUser.orElse(null);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
     public List<User> search(final String keyword) {
         validateString(keyword);
 
-        final List<User> userList = userRepo.findByFirstnameOrLastnameOrEmail(keyword, keyword, keyword);
+        final List<User> userList = userRepo.findByFirstnameContainingOrLastnameContainingOrEmailContaining(keyword, keyword, keyword);
         return userList == null ? new ArrayList<>() : userList;
     }
 
@@ -100,6 +100,12 @@ public class UserServiceImpl implements UserService {
         validateString(email);
         final User existingUser = this.getNonDeletedUserByEmail(email);
         if (existingUser != null) {
+            final User loggedInUser = getLoggedInUser();
+            if (loggedInUser != null) {
+                existingUser.setUpdatedBy(loggedInUser.getEmail());
+            } else {
+                existingUser.setUpdatedBy("admin@admin.com");
+            }
             existingUser.setDeleted(true);
             userRepo.save(existingUser);
         }
@@ -115,10 +121,12 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
     public List<User> getDeletedUsers() {
         return userRepo.findByIsDeleted(true);
     }
 
+    @Override
     public List<User> getNonDeletedUsers() {
         return userRepo.findByIsDeleted(false);
     }

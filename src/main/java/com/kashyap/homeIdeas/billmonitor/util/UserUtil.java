@@ -4,6 +4,7 @@ import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,13 +16,12 @@ public class UserUtil {
     private final static PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public static User buildUser(UserDto dto) {
-
         return new UserBuilder()
                 .setFirstname(dto.getFirstname())
                 .setLastname(dto.getLastname())
                 .setEmail(dto.getEmail())
-                .setPassword(encoder.encode(dto.getPassword()))
-                .setRole(Role.getRole(dto.getRole()))
+                .setPassword( StringUtils.isNotBlank(dto.getPassword()) ? encoder.encode(dto.getPassword()) : null)
+                .setRole( StringUtils.isNotBlank(dto.getRole()) ? Role.getRole(dto.getRole()) : null)
                 .build();
     }
 

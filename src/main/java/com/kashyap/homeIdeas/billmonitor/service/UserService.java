@@ -23,4 +23,8 @@ public interface UserService {
     void removeByEmail(String email);
 
     User getNonDeletedUserByEmail(String email);
+
+    List<User> getDeletedUsers();
+
+    List<User> getNonDeletedUsers();
 }

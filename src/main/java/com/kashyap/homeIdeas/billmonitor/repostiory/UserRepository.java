@@ -13,7 +13,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
 
     List<User> findByEmailAndIsDeleted(String email, boolean isDeleted);
 
-    List<User> findByFirstnameOrLastnameOrEmail(String firstname, String lastname, String email);
+    List<User> findByFirstnameContainingOrLastnameContainingOrEmailContaining(String firstname, String lastname, String email);
 
     List<User> findByIsDeleted(boolean isDeleted);
 

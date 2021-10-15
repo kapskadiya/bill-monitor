@@ -4,6 +4,8 @@ import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -19,6 +21,8 @@ public class DatabaseInitializer implements ApplicationListener<ApplicationReady
     private final List<String> lastnameList = List.of("Kadiya", "Cooper");
     private final List<String> emailList = List.of("kapskadiya@gmail.com", "sheldon@cooper.com");
     private final List<String> roleList = List.of(Role.ADMIN.name(), Role.USER.name());
+
+    private static final Logger log = LoggerFactory.getLogger(DatabaseInitializer.class);
 
     @Autowired
     private UserService userService;
@@ -39,7 +43,12 @@ public class DatabaseInitializer implements ApplicationListener<ApplicationReady
                     .setRole(Role.getRole(roleList.get(i)))
                     .build();
 
-            userService.save(user);
+            try {
+                userService.save(user);
+            } catch (Exception e) {
+                log.error("ERROR: ",e);
+            }
+
         }
     }
 }
