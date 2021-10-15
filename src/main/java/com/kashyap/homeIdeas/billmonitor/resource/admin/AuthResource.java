@@ -1,4 +1,4 @@
-package com.kashyap.homeIdeas.billmonitor.resource.usermanagement;
+package com.kashyap.homeIdeas.billmonitor.resource.admin;
 
 import com.kashyap.homeIdeas.billmonitor.config.security.JWTTokenUtil;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
@@ -19,8 +19,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/rest/usermanagement/auth")
+@RequestMapping("/rest/admin/auth")
 public class AuthResource {
 
     private static final Logger log = LoggerFactory.getLogger(AuthResource.class);
@@ -38,7 +41,7 @@ public class AuthResource {
     public ApplicationResponse login(@RequestBody AuthRequest authRequest) {
         final ApplicationResponse response = new ApplicationResponse();
 
-        final User user = userService.getById(authRequest.getEmail());
+        final User user = userService.getNonDeletedUserByEmail(authRequest.getEmail());
 
         if (user == null) {
             final Failure failure = new Failure();
@@ -53,8 +56,11 @@ public class AuthResource {
             final Authentication authentication = authenticationManager.authenticate(token);
 
             final User loggedInUser = (User) authentication.getPrincipal();
-            response.setSuccess("token", jwtTokenUtil.generateAccessToken(loggedInUser));
-            response.setSuccess("user", UserUtil.buildDto(loggedInUser));
+
+            final Map<String, Object> success = new HashMap<>();
+            success.put("token", jwtTokenUtil.generateAccessToken(loggedInUser));
+            success.put("user", UserUtil.buildDto(loggedInUser));
+            response.setSuccess(success);
 
             return response;
         } catch (BadCredentialsException bce) {

@@ -1,35 +1,26 @@
 package com.kashyap.homeIdeas.billmonitor.service;
 
 import com.kashyap.homeIdeas.billmonitor.model.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
 
     void save(User user);
 
-    void upsert(final User user) throws IOException;
+    void update(User user);
 
-    boolean update(final User user);
+    User getById(String id);
 
-    User getById(final String id);
+    List<User> getByFirstname(String firstname);
 
-    User getByUsername(final String username);
+    List<User> getByLastname(String lastname);
 
-    List<User> getByFirstname(final String firstname);
+    List<User> search(String keyword);
 
-    List<User> getByLastname(final String lastname);
+    void removeById(String id);
 
-    List<User> search(final String keyword);
+    void removeByEmail(String email);
 
-    void removeById(final String id) throws IOException;
-
-    boolean removeByUsername(final String username) throws IOException;
-
-    boolean disableUser(final String username) throws IOException;
-
-    boolean enableUser(final String username) throws IOException;
-
+    User getNonDeletedUserByEmail(String email);
 }

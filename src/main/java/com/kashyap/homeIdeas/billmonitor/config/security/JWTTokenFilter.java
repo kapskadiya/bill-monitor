@@ -1,6 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.config.security;
 
-import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
+import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class JWTTokenFilter extends OncePerRequestFilter {
     private JWTTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserRepository userRepo;
+    private UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -46,10 +46,7 @@ public class JWTTokenFilter extends OncePerRequestFilter {
         }
 
         // Get user identity and set it on the spring security context
-        final UserDetails userDetails = userRepo
-                .findById(jwtTokenUtil.getUsername(token))
-                .orElse(null);
-
+        final UserDetails userDetails = userService.getNonDeletedUserByEmail(jwtTokenUtil.getUsername(token));
 
         final UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(

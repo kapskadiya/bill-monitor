@@ -8,11 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,24 +27,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(User user) {
         if (user == null) {
-            throw new IllegalArgumentException("user object is null.");
+            throw new IllegalArgumentException("User object is null.");
         }
+
+        final User existingUser = getNonDeletedUserByEmail(user.getEmail());
+        if (existingUser != null) {
+            throw new IllegalArgumentException("User is already existed.");
+        }
+
+        final User loggedInUser = getLoggedInUser();
+
+        if (loggedInUser != null) {
+            user.setCreatedBy(loggedInUser.getEmail());
+        } else {
+            user.setCreatedBy("admin@admin.com");
+        }
+        user.setDeleted(false);
         userRepo.save(user);
     }
 
     @Override
-    public boolean update(final User user) {
-        if (user == null) {
-            return false;
+    public void update(final User user) {
+        if (user != null) {
+            final User existingUser = this.getNonDeletedUserByEmail(user.getEmail());
+            if (existingUser != null) {
+                this.fillUser(existingUser, user);
+                userRepo.save(existingUser);
+            }
         }
-
-        final User existingUser = this.getById(user.getEmail());
-        if (existingUser == null) {
-            return false;
-        }
-
-        this.fillUser(existingUser, user);
-        return (userRepo.save(existingUser) != null);
     }
 
     @Override
@@ -54,14 +63,6 @@ public class UserServiceImpl implements UserService {
 
         final Optional<User> opUser = userRepo.findById(id);
         return opUser.orElse(new User());
-    }
-
-    @Override
-    public User getByUsername(String username) {
-        validateString(username);
-
-        final Optional<User> opUser = userRepo.findByUsername(username);
-        return opUser.orElse(null);
     }
 
     @Override
@@ -82,32 +83,44 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> search(final String keyword) {
-        return null;
+        validateString(keyword);
+
+        final List<User> userList = userRepo.findByFirstnameOrLastnameOrEmail(keyword, keyword, keyword);
+        return userList == null ? new ArrayList<>() : userList;
     }
 
     @Override
-    public void removeById(String id) throws IOException {
+    public void removeById(String id) {
         validateString(id);
         userRepo.deleteById(id);
     }
 
     @Override
-    public boolean removeByUsername(final String username) throws IOException {
-        validateString(username);
-//        return userRepo.removeByUsername(username);
-        return true;
+    public void removeByEmail(final String email) {
+        validateString(email);
+        final User existingUser = this.getNonDeletedUserByEmail(email);
+        if (existingUser != null) {
+            existingUser.setDeleted(true);
+            userRepo.save(existingUser);
+        }
     }
 
     @Override
-    public boolean disableUser(final String username) throws IOException {
-        validateString(username);
-        return userRepo.disableUser(username);
+    public User getNonDeletedUserByEmail(String email) {
+        validateString(email);
+        final List<User> userList = userRepo.findByEmailAndIsDeleted(email, false);
+        if (CollectionUtils.isNotEmpty(userList)) {
+            return userList.get(0);
+        }
+        return null;
     }
 
-    @Override
-    public boolean enableUser(final String username) throws IOException {
-        validateString(username);
-        return userRepo.enableUser(username);
+    public List<User> getDeletedUsers() {
+        return userRepo.findByIsDeleted(true);
+    }
+
+    public List<User> getNonDeletedUsers() {
+        return userRepo.findByIsDeleted(false);
     }
 
     private void validateString(final String str) {
@@ -117,15 +130,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public void upsert(final User user) throws IOException {
-        if (user == null) {
-            return;
-        }
- //       userRepo.upsert(user);
-    }
-
     private void fillUser(final User existingUser, final User newUser) {
+        final User loggedInUser = getLoggedInUser();
         if (StringUtils.isNotBlank(newUser.getFirstname())) {
             existingUser.setFirstname(newUser.getFirstname());
         }
@@ -135,7 +141,18 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isNotBlank(newUser.getEmail())) {
             existingUser.setEmail(newUser.getEmail());
         }
+        if (loggedInUser != null) {
+            existingUser.setUpdatedBy(loggedInUser.getEmail());
+        }
 
+    }
+
+    private User getLoggedInUser() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            return  (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        }
+       return null;
     }
 
 

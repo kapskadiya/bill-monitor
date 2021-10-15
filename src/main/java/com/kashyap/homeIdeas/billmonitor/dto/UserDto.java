@@ -2,11 +2,9 @@ package com.kashyap.homeIdeas.billmonitor.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kashyap.homeIdeas.billmonitor.model.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class UserDto {
@@ -14,6 +12,7 @@ public class UserDto {
     private String firstname;
     private String lastname;
 
+    @NotEmpty
     @Email
     private String email;
 
@@ -23,7 +22,8 @@ public class UserDto {
 
     private String role;
 
-    private boolean isDeleted;
+    private String createdBy;
+    private String updatedBy;
 
     public String getFirstname() {
         return firstname;
@@ -67,11 +67,19 @@ public class UserDto {
         this.role = role.trim().toLowerCase();
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

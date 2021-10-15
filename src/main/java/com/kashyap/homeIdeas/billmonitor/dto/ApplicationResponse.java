@@ -5,8 +5,9 @@ import java.util.Map;
 
 public class ApplicationResponse {
 
-    private Map<String, Object> success = new HashMap<>();
-    private Failure failure = new Failure();
+    private Map<String, Object> success;
+    private Failure failure;
+    private int httpCode;
 
     public Map<String, Object> getSuccess() {
         return success;
@@ -24,7 +25,11 @@ public class ApplicationResponse {
         this.failure = failure;
     }
 
-    public void setSuccess(String field, Object value) {
-        this.success.put(field, value);
+    public int getHttpCode() {
+        return httpCode;
+    }
+
+    public void setHttpCode(int httpCode) {
+        this.httpCode = httpCode;
     }
 }

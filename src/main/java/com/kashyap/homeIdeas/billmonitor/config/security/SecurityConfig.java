@@ -1,6 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.config.security;
 
-import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
+import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -31,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserRepository userRepo;
+    private UserService userService;
 
     @Autowired
     private JWTTokenFilter jwtTokenFilter;
@@ -48,10 +49,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> userRepo
-                .findById(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(String.format("User: %s, not found", email)));
+        return email -> {
+            final UserDetails user = userService.getNonDeletedUserByEmail(email);
+            if (user == null) {
+                throw new UsernameNotFoundException(String.format("User: %s, not found", email));
+            }
+            return user;
+        };
     }
 
     @Override
@@ -84,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(String.format("%s/**", restApiDocPath)).permitAll()
                 .antMatchers(String.format("%s/**", swaggerPath)).permitAll()
                 .antMatchers("/rest/**/login").permitAll()
-                .antMatchers("/rest/usermanagement/user/add").permitAll()
+                .antMatchers("/rest/admin/user/create").permitAll()
                 .anyRequest().authenticated();
 
         // Add JWT token filter

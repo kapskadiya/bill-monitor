@@ -17,7 +17,6 @@ public class UserUtil {
     public static User buildUser(UserDto dto) {
 
         return new UserBuilder()
-                .setId(dto.getEmail())
                 .setFirstname(dto.getFirstname())
                 .setLastname(dto.getLastname())
                 .setEmail(dto.getEmail())
@@ -32,6 +31,8 @@ public class UserUtil {
         dto.setLastname(user.getLastname());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole().name());
+        dto.setCreatedBy(user.getCreatedBy());
+        dto.setUpdatedBy(user.getUpdatedBy());
 
         return dto;
     }
