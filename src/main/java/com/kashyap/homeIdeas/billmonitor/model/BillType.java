@@ -12,6 +12,8 @@ public enum BillType {
         final String typeInLowercase = type.toLowerCase();
 
         switch (typeInLowercase) {
+            case "electricity":
+                return BillType.ELECTRICITY;
             case "gas":
                 return BillType.GAS;
             case "dth":
@@ -21,7 +23,7 @@ public enum BillType {
             case "broadband":
                 return BillType.BROADBAND;
             default:
-                return BillType.ELECTRICITY;
+               throw new IllegalArgumentException("Bill type should be valid.");
         }
     }
 }

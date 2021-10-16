@@ -32,7 +32,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             final LocalDate localDate = issueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             final String monthName = localDate.getMonth().name();
 
-            monthAndAmountMap.put(monthName, bill.getAmountToBePay());
+            monthAndAmountMap.put(monthName, bill.getTotalAmount());
         });
 
         return monthAndAmountMap;

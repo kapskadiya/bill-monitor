@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class BillDto {
 
+    private String billId;
     private String orgName;
-    private String customerName;
-    private String customerId;
+    private String userId;
+    private String serviceId;
     private String type;
-    private int amountToBePay;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date issueDate;
@@ -19,9 +19,13 @@ public class BillDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date dueDate;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private Date payDate;
+
     private PaymentDetailDto paymentDetail;
-    private Integer billingDurationInDays;
-    private Map<String, Object> metadata;
+    private int totalAmount;
+    private int totalAmountAfterExpiry;
+    private Map<String, Object> extraInfo;
 
     public String getOrgName() {
         return orgName;
@@ -31,12 +35,12 @@ public class BillDto {
         this.orgName = orgName;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getType() {
@@ -47,12 +51,12 @@ public class BillDto {
         this.type = type;
     }
 
-    public int getAmountToBePay() {
-        return amountToBePay;
+    public int getTotalAmount() {
+        return totalAmount;
     }
 
-    public void setAmountToBePay(int amountToBePay) {
-        this.amountToBePay = amountToBePay;
+    public void setTotalAmount(int totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public Date getIssueDate() {
@@ -79,27 +83,43 @@ public class BillDto {
         this.paymentDetail = paymentDetail;
     }
 
-    public Integer getBillingDurationInDays() {
-        return billingDurationInDays;
+    public Map<String, Object> getExtraInfo() {
+        return extraInfo;
     }
 
-    public void setBillingDurationInDays(Integer billingDurationInDays) {
-        this.billingDurationInDays = billingDurationInDays;
+    public void setExtraInfo(Map<String, Object> extraInfo) {
+        this.extraInfo = extraInfo;
     }
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
+    public String getServiceId(){
+        return serviceId;
     }
 
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
     }
 
-    public String getCustomerId() {
-        return customerId;
+    public String getBillId() {
+        return billId;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public void setBillId(String billId) {
+        this.billId = billId;
+    }
+
+    public int getTotalAmountAfterExpiry() {
+        return totalAmountAfterExpiry;
+    }
+
+    public void setTotalAmountAfterExpiry(int totalAmountAfterExpiry) {
+        this.totalAmountAfterExpiry = totalAmountAfterExpiry;
+    }
+
+    public Date getPayDate() {
+        return payDate;
+    }
+
+    public void setPayDate(Date payDate) {
+        this.payDate = payDate;
     }
 }

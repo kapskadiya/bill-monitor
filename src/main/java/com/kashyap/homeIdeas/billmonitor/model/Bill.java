@@ -20,17 +20,14 @@ public class Bill implements Serializable {
     @Field(type = FieldType.Text)
     private String orgName;
 
-    @Field(type = FieldType.Text)
-    private String customerName;
+    @Field(type = FieldType.Keyword)
+    private String userId;
 
     @Field(type = FieldType.Text)
-    private String customerId;
+    private String serviceId;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private BillType type;
-
-    @Field(type = FieldType.Integer)
-    private int amountToBePay;
 
     @Field(type = FieldType.Date)
     private Date issueDate;
@@ -38,14 +35,35 @@ public class Bill implements Serializable {
     @Field(type = FieldType.Date)
     private Date dueDate;
 
+    @Field(type = FieldType.Date)
+    private Date payDate;
+
     @Field(type = FieldType.Nested)
     private PaymentDetail paymentDetail;
 
     @Field(type = FieldType.Integer)
-    private int billingDurationInDays;
+    private int totalAmount;
+
+    @Field(type = FieldType.Integer)
+    private int totalAmountAfterExpiry;
 
     @Field(type = FieldType.Nested)
-    private Map<String, Object> metadata;
+    private Map<String, Object> extraInfo;
+
+    @Field(type = FieldType.Text)
+    private String createdBy;
+
+    @Field(type = FieldType.Text)
+    private String updatedBy;
+
+    @Field(type = FieldType.Date)
+    private Date createdDate;
+
+    @Field(type = FieldType.Date)
+    private Date updatedDate;
+
+    @Field(type = FieldType.Boolean)
+    private boolean isDeleted;
 
     public String getId() {
         return id;
@@ -63,12 +81,12 @@ public class Bill implements Serializable {
         this.orgName = orgName;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public BillType getType() {
@@ -79,12 +97,12 @@ public class Bill implements Serializable {
         this.type = type;
     }
 
-    public int getAmountToBePay() {
-        return amountToBePay;
+    public int getTotalAmount() {
+        return totalAmount;
     }
 
-    public void setAmountToBePay(int amountToBePay) {
-        this.amountToBePay = amountToBePay;
+    public void setTotalAmount(int totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public Date getIssueDate() {
@@ -111,27 +129,75 @@ public class Bill implements Serializable {
         this.paymentDetail = paymentDetail;
     }
 
-    public int getBillingDurationInDays() {
-        return billingDurationInDays;
+    public Map<String, Object> getExtraInfo() {
+        return extraInfo;
     }
 
-    public void setBillingDurationInDays(int billingDurationInDays) {
-        this.billingDurationInDays = billingDurationInDays;
+    public void setExtraInfo(Map<String, Object> extraInfo) {
+        this.extraInfo = extraInfo;
     }
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
+    public String getServiceId() {
+        return serviceId;
     }
 
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
     }
 
-    public String getCustomerId() {
-        return customerId;
+    public Date getPayDate() {
+        return payDate;
     }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+    public void setPayDate(Date payDate) {
+        this.payDate = payDate;
+    }
+
+    public int getTotalAmountAfterExpiry() {
+        return totalAmountAfterExpiry;
+    }
+
+    public void setTotalAmountAfterExpiry(int totalAmountAfterExpiry) {
+        this.totalAmountAfterExpiry = totalAmountAfterExpiry;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }

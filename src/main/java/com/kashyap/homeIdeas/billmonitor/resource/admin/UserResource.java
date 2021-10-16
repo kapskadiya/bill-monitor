@@ -50,7 +50,7 @@ public class UserResource {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/create")
-    public ApplicationResponse save(@Valid @RequestBody UserDto dto) {
+    public ApplicationResponse create(@Valid @RequestBody UserDto dto) {
         final ApplicationResponse response = new ApplicationResponse();
 
         final User user = UserUtil.buildUser(dto);

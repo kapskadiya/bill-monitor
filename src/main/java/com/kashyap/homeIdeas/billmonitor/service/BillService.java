@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BillService {
 
-    String save(Bill bill);
+    void save(Bill bill);
 
     boolean isExist(String billId);
 

@@ -2,18 +2,18 @@ package com.kashyap.homeIdeas.billmonitor.dto;
 
 public class PaymentDetailDto {
 
-    private String id;
-    private String status;
+    private String transactionId;
+    private String type;
     private String method;
-    private String platform;
-    private String payBy;
+    private String methodNumber;
+    private String status;
 
-    public String getId() {
-        return id;
+    public String getTransactionId() {
+        return transactionId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public String getMethod() {
@@ -24,27 +24,27 @@ public class PaymentDetailDto {
         this.method = method;
     }
 
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
-
-    public String getPayBy() {
-        return payBy;
-    }
-
-    public void setPayBy(String payBy) {
-        this.payBy = payBy;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getMethodNumber() {
+        return methodNumber;
+    }
+
+    public void setMethodNumber(String methodNumber) {
+        this.methodNumber = methodNumber;
     }
 }

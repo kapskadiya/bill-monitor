@@ -1,7 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
+import com.kashyap.homeIdeas.billmonitor.model.PaymentMethodType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentStatus;
+import com.kashyap.homeIdeas.billmonitor.model.PaymentType;
 import org.apache.commons.lang3.StringUtils;
 
 public class PaymentDetailBuilder {
@@ -12,41 +14,40 @@ public class PaymentDetailBuilder {
         paymentDetail = new PaymentDetail();
     }
 
-    public PaymentDetailBuilder setId(String id) {
+    public PaymentDetailBuilder setTransactionId(String id) {
         if (StringUtils.isNotBlank(id)) {
-            this.paymentDetail.setId(id);
+            this.paymentDetail.setTransactionId(id);
         }
         return this;
     }
 
     public PaymentDetailBuilder setMethod(String method) {
         if (StringUtils.isNotBlank(method)) {
-            this.paymentDetail.setMethod(method);
+            this.paymentDetail.setMethod(PaymentMethodType.getPaymentMethodType(method));
         }
         return this;
     }
 
-    public PaymentDetailBuilder setPlatform(String platform) {
-        if (StringUtils.isNotBlank(platform)) {
-            this.paymentDetail.setPlatform(platform);
-        }
-        return this;
-    }
-
-    public PaymentDetailBuilder setPayBy(String payBy) {
-        if (StringUtils.isNotBlank(payBy)) {
-            this.paymentDetail.setPayBy(payBy);
-        }
-        return this;
-    }
-
-    public  PaymentDetailBuilder setStatus(String status) {
+    public PaymentDetailBuilder setStatus(String status) {
         if (StringUtils.isNotBlank(status)) {
-            final PaymentStatus paymentStatus = PaymentStatus.getPaymentStatus(status);
-            this.paymentDetail.setStatus(paymentStatus);
+            this.paymentDetail.setStatus(PaymentStatus.getPaymentStatus(status));
         }
         return this;
 
+    }
+
+    public PaymentDetailBuilder setType(String type) {
+        if (StringUtils.isNotBlank(type)) {
+            this.paymentDetail.setType(PaymentType.getPaymentType(type));
+        }
+        return this;
+    }
+
+    public PaymentDetailBuilder setMethodNumber(String number) {
+        if (StringUtils.isNotBlank(number)) {
+            this.paymentDetail.setMethodNumber(number);
+        }
+        return this;
     }
 
     public PaymentDetail build() {

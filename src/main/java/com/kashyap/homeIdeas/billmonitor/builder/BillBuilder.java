@@ -31,22 +31,22 @@ public class BillBuilder {
         return this;
     }
 
-    public BillBuilder setCustomerName(String customerName) {
-        if (StringUtils.isNotBlank(customerName)) {
-            this.bill.setCustomerName(customerName);
+    public BillBuilder setUserId(String userId) {
+        if (StringUtils.isNotBlank(userId)) {
+            this.bill.setUserId(userId);
         }
         return this;
     }
 
-    public BillBuilder setType(BillType type) {
-        if (type != null) {
-            this.bill.setType(type);
+    public BillBuilder setType(String type) {
+        if (StringUtils.isNotBlank(type)) {
+            this.bill.setType(BillType.getBillType(type));
         }
         return this;
     }
 
-    public BillBuilder setAmountToBePay(int amountToBePay) {
-        this.bill.setAmountToBePay(amountToBePay);
+    public BillBuilder setTotalAmount(int totalAmount) {
+        this.bill.setTotalAmount(totalAmount);
         return this;
     }
 
@@ -64,6 +64,13 @@ public class BillBuilder {
         return this;
     }
 
+    public BillBuilder setPayDate(Date payDate) {
+        if (payDate != null) {
+            this.bill.setPayDate(payDate);
+        }
+        return this;
+    }
+
     public BillBuilder setPaymentDetail(PaymentDetail paymentDetail) {
         if (paymentDetail != null) {
             this.bill.setPaymentDetail(paymentDetail);
@@ -71,21 +78,21 @@ public class BillBuilder {
         return this;
     }
 
-    public BillBuilder setBillingDurationInDays(int billingDurationInDays) {
-        this.bill.setBillingDurationInDays(billingDurationInDays);
+    public BillBuilder setTotalAmountAfterExpiry(int totalAmountAfterExpiry) {
+        this.bill.setTotalAmountAfterExpiry(totalAmountAfterExpiry);
         return this;
     }
 
-    public BillBuilder setMetadata(Map<String, Object> metadata) {
-        if (MapUtils.isNotEmpty(metadata)) {
-            this.bill.setMetadata(metadata);
+    public BillBuilder setExtraInfo(Map<String, Object> info) {
+        if (MapUtils.isNotEmpty(info)) {
+            this.bill.setExtraInfo(info);
         }
         return this;
     }
 
-    public BillBuilder setCustomerId(String customerId) {
-        if (StringUtils.isNotBlank(customerId)) {
-            this.bill.setCustomerId(customerId);
+    public BillBuilder setServiceId(String serviceId) {
+        if (StringUtils.isNotBlank(serviceId)) {
+            this.bill.setServiceId(serviceId);
         }
         return this;
     }

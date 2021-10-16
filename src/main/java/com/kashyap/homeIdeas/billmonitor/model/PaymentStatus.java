@@ -2,7 +2,7 @@ package com.kashyap.homeIdeas.billmonitor.model;
 
 public enum PaymentStatus {
     PENDING,
-    INPROGRESS,
+    IN_PROGRESS,
     WAITING,
     DONE;
 
@@ -11,7 +11,7 @@ public enum PaymentStatus {
 
         switch (statusInLowercase) {
             case "inprogress":
-                return PaymentStatus.INPROGRESS;
+                return PaymentStatus.IN_PROGRESS;
             case "waiting":
                 return PaymentStatus.WAITING;
             case "done":
