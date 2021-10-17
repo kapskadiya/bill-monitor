@@ -13,14 +13,5 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     @Autowired
     private NoSQLOperations noSQLOperations;
 
-    @Override
-    public boolean disableUser(final String username) throws IOException {
-        return noSQLOperations.partialUpdate("user", username, "enabled", "false");
-    }
-
-    @Override
-    public boolean enableUser(final String username) throws IOException {
-        return noSQLOperations.partialUpdate("user", username, "enabled", "true");
-    }
 
 }

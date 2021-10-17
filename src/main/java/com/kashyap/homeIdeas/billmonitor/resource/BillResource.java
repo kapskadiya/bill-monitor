@@ -7,7 +7,6 @@ import com.kashyap.homeIdeas.billmonitor.dto.BillDto;
 import com.kashyap.homeIdeas.billmonitor.dto.Failure;
 import com.kashyap.homeIdeas.billmonitor.dto.PaymentDetailDto;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
-import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.service.AttachmentService;
 import com.kashyap.homeIdeas.billmonitor.service.BillService;
@@ -21,11 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -165,14 +164,10 @@ public class BillResource {
     @GetMapping(value = "/getNonDeletedBills")
     public ApplicationResponse getNonDeletedBills() {
         final ApplicationResponse response = new ApplicationResponse();
- //       final List<BillDto> billDtoList = new ArrayList<>();
         final List<Bill> billList;
 
         try {
-            billList = new ArrayList<>(service.getAll());
-//            if (CollectionUtils.isNotEmpty(billList)) {
-//                billDtoList.addAll(billList.stream().map())
-//            }
+            billList = new ArrayList<>(service.getByIsDeleted(false));
         } catch (IllegalArgumentException iae) {
             final Failure failure = new Failure();
             failure.setReason(iae.getMessage());
@@ -182,7 +177,7 @@ public class BillResource {
             return response;
         }
         final Map<String, Object> success = new HashMap<>();
-        success.put("nonDeletedBills", billList);
+        success.put("bills", billList);
         response.setSuccess(success);
 
         response.setHttpCode(HttpStatus.CREATED.value());
@@ -192,14 +187,10 @@ public class BillResource {
     @GetMapping(value = "/getDeletedBills")
     public ApplicationResponse getDeletedBills() {
         final ApplicationResponse response = new ApplicationResponse();
-        //       final List<BillDto> billDtoList = new ArrayList<>();
         final List<Bill> billList;
 
         try {
-            billList = new ArrayList<>(service.getAll());
-//            if (CollectionUtils.isNotEmpty(billList)) {
-//                billDtoList.addAll(billList.stream().map())
-//            }
+            billList = new ArrayList<>(service.getByIsDeleted(true));
         } catch (IllegalArgumentException iae) {
             final Failure failure = new Failure();
             failure.setReason(iae.getMessage());
@@ -209,47 +200,88 @@ public class BillResource {
             return response;
         }
         final Map<String, Object> success = new HashMap<>();
-        success.put("deletedBills", billList);
+        success.put("bills", billList);
         response.setSuccess(success);
 
         response.setHttpCode(HttpStatus.CREATED.value());
         return response;
     }
 
-    @GetMapping(value = "/get/id/{billId)")
-    public ResponseEntity<Bill> getById(@PathVariable String billId) {
-        if (StringUtils.isBlank(billId)) {
-            log.error("BillId is empty");
-            return ResponseEntity.badRequest().body(new Bill());
+    @GetMapping(value = "/get")
+    public ApplicationResponse get(@RequestParam(value = "id", required = false) String id,
+                                   @RequestParam(value = "billId", required = false) String billId,
+                                   @RequestParam(value = "customerId", required = false) String customerId) {
+        final ApplicationResponse response = new ApplicationResponse();
+        if (StringUtils.isBlank(id) && StringUtils.isBlank(billId) && StringUtils.isBlank(customerId)) {
+            final Failure failure = new Failure();
+            failure.setReason("billId and customerId, both are empty");
+            response.setFailure(failure);
+            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
+            return response;
         }
-        return ResponseEntity.ok().body(service.getById(billId));
+
+        final List<Bill> billList = new ArrayList<>();
+
+        if (StringUtils.isNotBlank(id)) {
+            try {
+                billList.add(service.getById(id));
+            } catch (IllegalArgumentException iae) {
+                final Failure failure = new Failure();
+                failure.setReason(iae.getMessage());
+                failure.setException(iae.toString());
+                response.setFailure(failure);
+                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
+                return response;
+            }
+        } else if (StringUtils.isNotBlank(billId)) {
+            try {
+                billList.add(service.getByBillId(billId));
+            } catch (IllegalArgumentException iae) {
+                final Failure failure = new Failure();
+                failure.setReason(iae.getMessage());
+                failure.setException(iae.toString());
+                response.setFailure(failure);
+                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
+                return response;
+            }
+
+        } else if (StringUtils.isNotBlank(customerId)) {
+            try {
+                billList.addAll(service.getByCustomerId(customerId));
+            } catch (IllegalArgumentException iae) {
+                final Failure failure = new Failure();
+                failure.setReason(iae.getMessage());
+                failure.setException(iae.toString());
+                response.setFailure(failure);
+                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
+                return response;
+            }
+        }
+        final Map<String, Object> success = new HashMap<>();
+        success.put("bills", billList);
+        response.setSuccess(success);
+
+        response.setHttpCode(HttpStatus.CREATED.value());
+        return response;
+
     }
 
-    @GetMapping(value = "/get/customerId/{customerId}")
-    public ResponseEntity<List<Bill>> getByCustomerId(@PathVariable String customerId) {
-        if (StringUtils.isBlank(customerId)) {
-            log.error("CustomerId is empty");
-            return ResponseEntity.badRequest().body(new ArrayList<>());
-        }
-        return ResponseEntity.ok().body(service.getByCustomerId(customerId));
-    }
-
-    @GetMapping(value = "/search")
-    public ResponseEntity<List<Bill>> getByCustomerName(@PathVariable String customerName) {
-        if (StringUtils.isBlank(customerName)) {
-            log.error("CustomerId is empty");
-            return ResponseEntity.badRequest().body(new ArrayList<>());
-        }
-        return ResponseEntity.ok().body(service.getByCustomerName(customerName));
-    }
-
-    @DeleteMapping(value = "/remove/id/{billId}")
-    public void remove(@PathVariable String billId) {
+    @DeleteMapping(value = "/delete/billId")
+    public void deleteById(@RequestParam(value = "billId") String billId) throws IOException {
         if (StringUtils.isBlank(billId)) {
             log.error("BillId is empty");
             return;
         }
-        service.remove(billId);
+        service.deleteById(billId);
+    }
+
+    @DeleteMapping(value = "/delete/customerId")
+    public void deleteByServiceNo(@RequestParam(value = "customerId") String customerId) throws IOException {
+        if (StringUtils.isBlank(customerId)) {
+            log.error("serviceNo is empty");
+            return;
+        }
+        service.deleteByCustomerId(customerId);
     }
 
     private Bill prepareBill(BillDto dto) {
@@ -263,10 +295,9 @@ public class BillResource {
                 .build();
 
         return new BillBuilder()
-                .setId(dto.getBillId())
+                .setBillId(dto.getBillId())
                 .setOrgName(dto.getOrgName())
-                .setUserId(dto.getUserId())
-                .setServiceId(dto.getServiceId())
+                .setCustomerId(dto.getCustomerId())
                 .setType(dto.getType())
                 .setTotalAmount(dto.getTotalAmount())
                 .setIssueDate(dto.getIssueDate())

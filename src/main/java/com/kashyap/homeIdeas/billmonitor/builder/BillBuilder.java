@@ -17,9 +17,10 @@ public class BillBuilder {
         bill = new Bill();
     }
 
-    public BillBuilder setId(String id) {
+
+    public BillBuilder setBillId(String id) {
         if (StringUtils.isNotBlank(id)) {
-            this.bill.setId(id);
+            this.bill.setBillId(id);
         }
         return this;
     }
@@ -27,13 +28,6 @@ public class BillBuilder {
     public BillBuilder setOrgName(String orgName) {
         if (StringUtils.isNotBlank(orgName)) {
             this.bill.setOrgName(orgName);
-        }
-        return this;
-    }
-
-    public BillBuilder setUserId(String userId) {
-        if (StringUtils.isNotBlank(userId)) {
-            this.bill.setUserId(userId);
         }
         return this;
     }
@@ -90,9 +84,9 @@ public class BillBuilder {
         return this;
     }
 
-    public BillBuilder setServiceId(String serviceId) {
-        if (StringUtils.isNotBlank(serviceId)) {
-            this.bill.setServiceId(serviceId);
+    public BillBuilder setCustomerId(String customerId) {
+        if (StringUtils.isNotBlank(customerId)) {
+            this.bill.setCustomerId(customerId);
         }
         return this;
     }

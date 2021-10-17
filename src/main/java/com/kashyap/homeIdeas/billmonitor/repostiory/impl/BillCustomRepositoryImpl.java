@@ -6,12 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillCustomRepository;
 import com.kashyap.homeIdeas.billmonitor.repostiory.NoSQLOperations;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,49 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
                 .collect(Collectors.toList());
 
          return noSQLOperations.bulkInsert(indexName, billInJsonList);
+    }
+
+    @Override
+    public void updateIsDeleted(String id, boolean isDeleted) throws IOException {
+
+       if(StringUtils.isBlank(id)) {
+           return;
+       }
+        noSQLOperations.partialUpdate(indexName, id, "isDeleted", String.valueOf(isDeleted));
+    }
+
+    @Override
+    public String getOnlyESIdByBillId(String billId) throws IOException {
+        if (StringUtils.isBlank(billId)) {
+            return StringUtils.EMPTY;
+        }
+
+        final List<String> idList = noSQLOperations.getOnlyIds(indexName, "billId", billId);
+        if (CollectionUtils.isNotEmpty(idList) && StringUtils.isNotBlank(idList.get(0))) {
+            return idList.get(0);
+        }
+        return StringUtils.EMPTY;
+    }
+
+    @Override
+    public List<String> getOnlyESIdsByCustomerId(String customerId) throws IOException {
+        if (StringUtils.isBlank(customerId)) {
+            return new ArrayList<>();
+        }
+
+        final List<String> idList = noSQLOperations.getOnlyIds(indexName, "customerId", customerId);
+        if (CollectionUtils.isNotEmpty(idList)) {
+            return idList;
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void bulkPartialUpdate(List<String> esIdList, String field, String value) throws IOException {
+        if (CollectionUtils.isEmpty(esIdList) || StringUtils.isBlank(field)) {
+            return;
+        }
+        noSQLOperations.bulkUpdate(indexName, esIdList, field, value);
     }
 
     private ObjectMapper getDefaultObjectMapper(){

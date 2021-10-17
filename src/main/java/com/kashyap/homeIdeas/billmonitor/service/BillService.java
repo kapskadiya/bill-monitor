@@ -14,17 +14,21 @@ public interface BillService {
 
     Bill getById(String billId);
 
-    List<Bill> getByCustomerId(String customerId);
+    Bill getByBillId(String billId);
 
-    List<Bill> getByCustomerName(String customerName);
+    List<Bill> getByCustomerId(String customerName);
 
-    String update(Bill newBill);
+    void update(Bill newBill);
 
-    void remove(String billId);
+    void deleteById(String billId) throws IOException;
+
+    void deleteByCustomerId(String customerId) throws IOException;
 
     List<Bill> getAll();
 
     boolean bulkSave(List<Bill> billList) throws IOException;
 
     List<Bill> getByType(BillType type);
+
+    List<Bill> getByIsDeleted(boolean isDeleted);
 }

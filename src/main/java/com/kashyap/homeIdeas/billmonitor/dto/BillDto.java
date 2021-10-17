@@ -9,8 +9,7 @@ public class BillDto {
 
     private String billId;
     private String orgName;
-    private String userId;
-    private String serviceId;
+    private String customerId;
     private String type;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -33,14 +32,6 @@ public class BillDto {
 
     public void setOrgName(String orgName) {
         this.orgName = orgName;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public String getType() {
@@ -91,12 +82,12 @@ public class BillDto {
         this.extraInfo = extraInfo;
     }
 
-    public String getServiceId(){
-        return serviceId;
+    public String getCustomerId(){
+        return customerId;
     }
 
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public String getBillId() {

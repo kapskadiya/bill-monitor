@@ -2,14 +2,13 @@ package com.kashyap.homeIdeas.billmonitor.service.impl;
 
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
+import com.kashyap.homeIdeas.billmonitor.service.AuthenticationService;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +23,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private AuthenticationService authService;
+
     @Override
     public void save(User user) {
         if (user == null) {
@@ -35,7 +37,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User is already existed.");
         }
 
-        final User loggedInUser = getLoggedInUser();
+        final User loggedInUser = authService.getLoggedInUser();
 
         if (loggedInUser != null) {
             user.setCreatedBy(loggedInUser.getEmail());
@@ -100,7 +102,7 @@ public class UserServiceImpl implements UserService {
         validateString(email);
         final User existingUser = this.getNonDeletedUserByEmail(email);
         if (existingUser != null) {
-            final User loggedInUser = getLoggedInUser();
+            final User loggedInUser = authService.getLoggedInUser();
             if (loggedInUser != null) {
                 existingUser.setUpdatedBy(loggedInUser.getEmail());
             } else {
@@ -139,7 +141,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void fillUser(final User existingUser, final User newUser) {
-        final User loggedInUser = getLoggedInUser();
+        final User loggedInUser = authService.getLoggedInUser();
         if (StringUtils.isNotBlank(newUser.getFirstname())) {
             existingUser.setFirstname(newUser.getFirstname());
         }
@@ -154,14 +156,5 @@ public class UserServiceImpl implements UserService {
         }
 
     }
-
-    private User getLoggedInUser() {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            return  (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        }
-       return null;
-    }
-
 
 }

@@ -7,20 +7,27 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -32,13 +39,10 @@ public class NoSQLOperationsImpl implements NoSQLOperations {
     private RestHighLevelClient client;
 
     @Override
-    public boolean partialUpdate(String index, String id, String field, String value) throws IOException {
+    public void partialUpdate(String index, String id, String field, String value) throws IOException {
         final UpdateRequest updateRequest = new UpdateRequest(index, id);
         updateRequest.doc(field, value);
-        final UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
-
-        return updateResponse.getGetResult().isExists();
-
+        client.update(updateRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -49,21 +53,23 @@ public class NoSQLOperationsImpl implements NoSQLOperations {
         return response.status().getStatus() > 0;
     }
 
+/*
     @Override
     public boolean removeByUsername(final String username) throws IOException {
         final DeleteByQueryRequest request = new DeleteByQueryRequest("user");
         request.setQuery(new TermQueryBuilder("username", username));
 
-        final BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
+            final BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
         return response.getDeleted() > 0;
     }
+*/
 
     @Override
-    public boolean bulkInsert(String indexName, List<String> valueInJsonList) throws IOException {
+    public boolean bulkInsert(String indexName, List<String> jsonValueList) throws IOException {
 
         final BulkRequest bulkRequest = new BulkRequest();
 
-        valueInJsonList.forEach(valueInJson -> {
+        jsonValueList.forEach(valueInJson -> {
             final IndexRequest request = new IndexRequest(indexName);
             request.source(valueInJson, XContentType.JSON);
             bulkRequest.add(request);
@@ -72,5 +78,37 @@ public class NoSQLOperationsImpl implements NoSQLOperations {
         final BulkResponse bulkResponse = client.bulk(bulkRequest, RequestOptions.DEFAULT);
 
         return StringUtils.isBlank(bulkResponse.buildFailureMessage());
+    }
+
+    @Override
+    public List<String> getOnlyIds(String indexName, String field, String value) throws IOException {
+        final List<String> idList = new ArrayList<>();
+
+        final SearchRequest searchRequest = new SearchRequest();
+        searchRequest.source(new SearchSourceBuilder().query(QueryBuilders.termQuery(field, value)));
+
+        final SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        if (searchResponse != null) {
+            final SearchHit[] searchHits = searchResponse.getHits().getHits();
+            if (searchHits != null) {
+                for (SearchHit searchHit : searchHits) {
+                    idList.add(searchHit.getId());
+                }
+            }
+        }
+        return idList;
+    }
+
+    @Override
+    public void bulkUpdate(String indexName, List<String> esIdList, String field, String value) throws IOException {
+        final BulkRequest bulkRequest = new BulkRequest();
+
+        esIdList.forEach(esId -> {
+            final UpdateRequest updateRequest = new UpdateRequest(indexName, esId);
+            updateRequest.doc(field, value);
+        });
+
+        client.bulk(bulkRequest, RequestOptions.DEFAULT);
     }
 }

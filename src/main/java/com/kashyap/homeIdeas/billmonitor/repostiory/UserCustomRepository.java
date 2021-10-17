@@ -6,7 +6,4 @@ import java.io.IOException;
 
 public interface UserCustomRepository {
 
-    boolean disableUser(final String username) throws IOException;
-
-    boolean enableUser(final String username) throws IOException;
 }

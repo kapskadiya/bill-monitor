@@ -17,14 +17,14 @@ public class Bill implements Serializable {
     @ReadOnlyProperty
     private String id;
 
+    @Field(type = FieldType.Keyword)
+    private String billId;
+
     @Field(type = FieldType.Text)
     private String orgName;
 
-    @Field(type = FieldType.Keyword)
-    private String userId;
-
     @Field(type = FieldType.Text)
-    private String serviceId;
+    private String customerId;
 
     @Field(type = FieldType.Keyword)
     private BillType type;
@@ -81,14 +81,6 @@ public class Bill implements Serializable {
         this.orgName = orgName;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public BillType getType() {
         return type;
     }
@@ -137,12 +129,12 @@ public class Bill implements Serializable {
         this.extraInfo = extraInfo;
     }
 
-    public String getServiceId() {
-        return serviceId;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public Date getPayDate() {
@@ -199,5 +191,13 @@ public class Bill implements Serializable {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
     }
 }
