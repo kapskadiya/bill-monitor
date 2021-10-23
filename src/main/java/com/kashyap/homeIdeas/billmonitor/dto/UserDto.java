@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.Map;
 
 public class UserDto {
 
@@ -24,6 +25,8 @@ public class UserDto {
 
     private String createdBy;
     private String updatedBy;
+
+    private Map<String, String> services;
 
     public String getFirstname() {
         return firstname;
@@ -81,5 +84,13 @@ public class UserDto {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Map<String, String> getServices() {
+        return services;
+    }
+
+    public void setServices(Map<String, String> services) {
+        this.services = services;
     }
 }

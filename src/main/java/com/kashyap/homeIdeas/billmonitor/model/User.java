@@ -12,7 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Document(indexName = "user")
 public class User implements UserDetails {
@@ -45,6 +47,35 @@ public class User implements UserDetails {
 
     @Field(type = FieldType.Boolean)
     private boolean isDeleted;
+
+    @Field(type = FieldType.Nested)
+    private List<Service> services;
+
+    public static class Service {
+        private String name;
+        private String number;
+
+        public Service(String name, String number){
+            this.name = name;
+            this.number = number;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public void setNumber(String number) {
+            this.number = number;
+        }
+    }
 
     public String getId() {
         return id;
@@ -148,5 +179,13 @@ public class User implements UserDetails {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
     }
 }

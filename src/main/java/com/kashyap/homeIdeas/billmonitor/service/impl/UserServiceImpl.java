@@ -52,10 +52,12 @@ public class UserServiceImpl implements UserService {
     public void update(final User user) {
         if (user != null) {
             final User existingUser = this.getNonDeletedUserByEmail(user.getEmail());
-            if (existingUser != null) {
-                this.fillUser(existingUser, user);
-                userRepo.save(existingUser);
+            if (existingUser == null) {
+                throw new IllegalArgumentException("User is not found");
             }
+
+            this.fillUser(existingUser, user);
+            userRepo.save(existingUser);
         }
     }
 
@@ -154,7 +156,9 @@ public class UserServiceImpl implements UserService {
         if (loggedInUser != null) {
             existingUser.setUpdatedBy(loggedInUser.getEmail());
         }
-
+        if (CollectionUtils.isNotEmpty(newUser.getServices())) {
+            existingUser.setServices(newUser.getServices());
+        }
     }
 
 }

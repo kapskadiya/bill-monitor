@@ -4,12 +4,15 @@ import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserUtil {
 
@@ -22,6 +25,7 @@ public class UserUtil {
                 .setEmail(dto.getEmail())
                 .setPassword( StringUtils.isNotBlank(dto.getPassword()) ? encoder.encode(dto.getPassword()) : null)
                 .setRole( StringUtils.isNotBlank(dto.getRole()) ? Role.getRole(dto.getRole()) : null)
+                .setUserServices(dto.getServices())
                 .build();
     }
 
@@ -33,6 +37,12 @@ public class UserUtil {
         dto.setRole(user.getRole().name());
         dto.setCreatedBy(user.getCreatedBy());
         dto.setUpdatedBy(user.getUpdatedBy());
+        if (CollectionUtils.isNotEmpty(user.getServices())){
+            final Map<String, String> services = user.getServices()
+                    .stream()
+                    .collect(Collectors.toMap(User.Service::getName, User.Service::getNumber));
+            dto.setServices(services);
+        }
 
         return dto;
     }
