@@ -24,6 +24,8 @@ public interface UserService {
 
     User getNonDeletedUserByEmail(String email);
 
+    boolean isExistByEmail(String email);
+
     List<User> getDeletedUsers();
 
     List<User> getNonDeletedUsers();

@@ -4,8 +4,8 @@ import com.kashyap.homeIdeas.billmonitor.builder.BillBuilder;
 import com.kashyap.homeIdeas.billmonitor.builder.PaymentDetailBuilder;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
 import com.kashyap.homeIdeas.billmonitor.dto.BillDto;
-import com.kashyap.homeIdeas.billmonitor.dto.Failure;
 import com.kashyap.homeIdeas.billmonitor.dto.PaymentDetailDto;
+import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.service.AttachmentService;
@@ -32,9 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -52,88 +51,47 @@ public class BillResource {
     @PostMapping(value = "/create")
     public ApplicationResponse create(@RequestBody BillDto dto) {
         final ApplicationResponse response = new ApplicationResponse();
+
         final Bill bill = this.prepareBill(dto);
+        service.save(bill);
 
-        try {
-            service.save(bill);
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("isSaved", true);
-        success.put("message", "resource saved successfully");
-        response.setSuccess(success);
-
-        response.setHttpCode(HttpStatus.CREATED.value());
+        response.setSuccess(true);
+        response.setMessage("resource saved successfully");
+        response.setCode(HttpStatus.CREATED.value());
         return response;
     }
 
     @PutMapping("/update")
     public ApplicationResponse update(@RequestBody BillDto dto) {
         final ApplicationResponse response = new ApplicationResponse();
-        if (dto == null) {
-            final Failure failure = new Failure();
-            failure.setReason("Request is not valid");
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Bill bill = this.prepareBill(dto);
-        try {
-            service.update(bill);
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("isSaved", true);
-        success.put("message", "resources saved successfully");
-        response.setSuccess(success);
 
-        response.setHttpCode(HttpStatus.OK.value());
+        final Bill bill = this.prepareBill(dto);
+        service.update(bill);
+
+        response.setSuccess(true);
+        response.setMessage("resource updated successfully");
+        response.setCode(HttpStatus.NO_CONTENT.value());
         return response;
     }
 
     @PostMapping(value = "/bulk/create")
     public ApplicationResponse bulkCreate(@RequestBody List<BillDto> dtoList) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
+
         if (CollectionUtils.isEmpty(dtoList)) {
-            final Failure failure = new Failure();
-            failure.setReason("Request is not valid");
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
+           throw new BillMonitorValidationException("Given data is empty");
         }
+
         final List<Bill> billLIst = dtoList
                 .stream()
                 .map(this::prepareBill)
                 .collect(Collectors.toList());
 
-        try {
-            service.bulkSave(billLIst);
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("isSaved", true);
-        success.put("message", "resources saved successfully");
-        response.setSuccess(success);
+        service.bulkSave(billLIst);
 
-        response.setHttpCode(HttpStatus.CREATED.value());
+        response.setSuccess(true);
+        response.setMessage("resource saved successfully");
+        response.setCode(HttpStatus.CREATED.value());
         return response;
     }
 
@@ -164,46 +122,26 @@ public class BillResource {
     @GetMapping(value = "/getNonDeletedBills")
     public ApplicationResponse getNonDeletedBills() {
         final ApplicationResponse response = new ApplicationResponse();
-        final List<Bill> billList;
 
-        try {
-            billList = new ArrayList<>(service.getByIsDeleted(false));
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("bills", billList);
-        response.setSuccess(success);
+        final List<Bill> billList = service.getByIsDeleted(false);
 
-        response.setHttpCode(HttpStatus.CREATED.value());
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(billList);
+        response.setCode(HttpStatus.OK.value());
         return response;
     }
 
     @GetMapping(value = "/getDeletedBills")
     public ApplicationResponse getDeletedBills() {
         final ApplicationResponse response = new ApplicationResponse();
-        final List<Bill> billList;
 
-        try {
-            billList = new ArrayList<>(service.getByIsDeleted(true));
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("bills", billList);
-        response.setSuccess(success);
+        final List<Bill> billList = service.getByIsDeleted(true);
 
-        response.setHttpCode(HttpStatus.CREATED.value());
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(billList);
+        response.setCode(HttpStatus.OK.value());
         return response;
     }
 
@@ -212,79 +150,66 @@ public class BillResource {
                                    @RequestParam(value = "billId", required = false) String billId,
                                    @RequestParam(value = "customerId", required = false) String customerId) {
         final ApplicationResponse response = new ApplicationResponse();
+
         if (StringUtils.isBlank(id) && StringUtils.isBlank(billId) && StringUtils.isBlank(customerId)) {
-            final Failure failure = new Failure();
-            failure.setReason("billId and customerId, both are empty");
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
+            throw new BillMonitorValidationException("Given data is empty");
         }
 
         final List<Bill> billList = new ArrayList<>();
 
         if (StringUtils.isNotBlank(id)) {
-            try {
-                billList.add(service.getById(id));
-            } catch (IllegalArgumentException iae) {
-                final Failure failure = new Failure();
-                failure.setReason(iae.getMessage());
-                failure.setException(iae.toString());
-                response.setFailure(failure);
-                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-                return response;
-            }
+            billList.add(service.getById(id));
         } else if (StringUtils.isNotBlank(billId)) {
-            try {
-                billList.add(service.getByBillId(billId));
-            } catch (IllegalArgumentException iae) {
-                final Failure failure = new Failure();
-                failure.setReason(iae.getMessage());
-                failure.setException(iae.toString());
-                response.setFailure(failure);
-                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-                return response;
-            }
-
+            billList.add(service.getByBillId(billId));
         } else if (StringUtils.isNotBlank(customerId)) {
-            try {
-                billList.addAll(service.getByCustomerId(customerId));
-            } catch (IllegalArgumentException iae) {
-                final Failure failure = new Failure();
-                failure.setReason(iae.getMessage());
-                failure.setException(iae.toString());
-                response.setFailure(failure);
-                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-                return response;
-            }
+            billList.addAll(service.getByCustomerId(customerId));
         }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("bills", billList);
-        response.setSuccess(success);
 
-        response.setHttpCode(HttpStatus.CREATED.value());
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(billList);
+        response.setCode(HttpStatus.OK.value());
         return response;
 
     }
 
     @DeleteMapping(value = "/delete/billId")
-    public void deleteById(@RequestParam(value = "billId") String billId) throws IOException {
+    public ApplicationResponse deleteById(@RequestParam(value = "billId") String billId) throws IOException {
+        final ApplicationResponse response = new ApplicationResponse();
+
         if (StringUtils.isBlank(billId)) {
             log.error("BillId is empty");
-            return;
+            throw new BillMonitorValidationException("Given Data is empty");
         }
         service.deleteById(billId);
+
+        response.setSuccess(true);
+        response.setMessage("Bill deleted successfully");
+        response.setCode(HttpStatus.OK.value());
+        return response;
     }
 
     @DeleteMapping(value = "/delete/customerId")
-    public void deleteByServiceNo(@RequestParam(value = "customerId") String customerId) throws IOException {
+    public ApplicationResponse deleteByCustomerId(@RequestParam(value = "customerId") String customerId) throws IOException {
+        final ApplicationResponse response = new ApplicationResponse();
+
         if (StringUtils.isBlank(customerId)) {
             log.error("serviceNo is empty");
-            return;
+            throw new BillMonitorValidationException("Given Data is empty");
         }
         service.deleteByCustomerId(customerId);
+
+        response.setSuccess(true);
+        response.setMessage("Bill deleted successfully");
+        response.setCode(HttpStatus.OK.value());
+        return response;
     }
 
-    private Bill prepareBill(BillDto dto) {
+    private Bill prepareBill(BillDto billDto) {
+
+        final BillDto dto = Optional.ofNullable(billDto)
+                .orElseThrow(() -> new BillMonitorValidationException("Given data is empty"));
+
         final PaymentDetailDto paymentDetailDto = dto.getPaymentDetail();
         final PaymentDetail paymentDetail = new PaymentDetailBuilder()
                 .setTransactionId(paymentDetailDto.getTransactionId())
@@ -294,7 +219,7 @@ public class BillResource {
                 .setType(paymentDetailDto.getType())
                 .build();
 
-        return new BillBuilder()
+        final Bill bill = new BillBuilder()
                 .setBillId(dto.getBillId())
                 .setOrgName(dto.getOrgName())
                 .setCustomerId(dto.getCustomerId())
@@ -307,5 +232,8 @@ public class BillResource {
                 .setTotalAmountAfterExpiry(dto.getTotalAmountAfterExpiry())
                 .setExtraInfo(dto.getExtraInfo())
                 .build();
+
+        return Optional.ofNullable(bill)
+                .orElseThrow(() -> new BillMonitorValidationException("Data is not prepared properly"));
     }
 }

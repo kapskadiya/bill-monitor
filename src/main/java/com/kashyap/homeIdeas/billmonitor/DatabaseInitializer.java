@@ -3,7 +3,7 @@ package com.kashyap.homeIdeas.billmonitor;
 import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
-import com.kashyap.homeIdeas.billmonitor.service.UserService;
+import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,21 @@ public class DatabaseInitializer implements ApplicationListener<ApplicationReady
     private static final Logger log = LoggerFactory.getLogger(DatabaseInitializer.class);
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder encoder;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-
+        final String password = "admin123";
         for (int i = 0; i < emailList.size(); i++) {
-            final String password = "abc123_";
-            User user = new UserBuilder()
+            if (userRepository.existsById(emailList.get(i)+"__ADMIN_BY_SYSTEM")) {
+                continue;
+            }
+
+            final User user = new UserBuilder()
+                    .setId(emailList.get(i)+"__ADMIN_BY_SYSTEM")
                     .setFirstname(firstnameList.get(i))
                     .setLastname(lastnameList.get(i))
                     .setPassword(encoder.encode(password))
@@ -44,9 +48,9 @@ public class DatabaseInitializer implements ApplicationListener<ApplicationReady
                     .build();
 
             try {
-                userService.save(user);
+                userRepository.save(user);
             } catch (Exception e) {
-                log.error("ERROR: ",e);
+                log.error("***Database Initializer*** ERROR: ",e);
             }
 
         }

@@ -1,5 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.service.impl;
 
+import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.repostiory.UserRepository;
 import com.kashyap.homeIdeas.billmonitor.service.AuthenticationService;
@@ -28,37 +30,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User object is null.");
-        }
 
-        final User existingUser = getNonDeletedUserByEmail(user.getEmail());
-        if (existingUser != null) {
-            throw new IllegalArgumentException("User is already existed.");
+        if (isExistByEmail(user.getEmail())) {
+            throw new BillMonitorValidationException("User is already exist");
         }
 
         final User loggedInUser = authService.getLoggedInUser();
-
-        if (loggedInUser != null) {
-            user.setCreatedBy(loggedInUser.getEmail());
-        } else {
-            user.setCreatedBy("admin@admin.com");
-        }
+        user.setCreatedBy(loggedInUser.getEmail());
         user.setDeleted(false);
+
         userRepo.save(user);
     }
 
     @Override
     public void update(final User user) {
-        if (user != null) {
-            final User existingUser = this.getNonDeletedUserByEmail(user.getEmail());
-            if (existingUser == null) {
-                throw new IllegalArgumentException("User is not found");
-            }
-
-            this.fillUser(existingUser, user);
-            userRepo.save(existingUser);
+        final User existingUser = this.getNonDeletedUserByEmail(user.getEmail());
+        if (existingUser == null) {
+            throw new NoRecordFoundException("User is not found");
         }
+
+        this.fillUser(existingUser, user);
+        userRepo.save(existingUser);
     }
 
     @Override
@@ -66,7 +58,7 @@ public class UserServiceImpl implements UserService {
         validateString(id);
 
         final Optional<User> opUser = userRepo.findById(id);
-        return opUser.orElse(null);
+        return opUser.orElseThrow(NoRecordFoundException::new);
     }
 
     @Override
@@ -103,26 +95,33 @@ public class UserServiceImpl implements UserService {
     public void removeByEmail(final String email) {
         validateString(email);
         final User existingUser = this.getNonDeletedUserByEmail(email);
-        if (existingUser != null) {
-            final User loggedInUser = authService.getLoggedInUser();
-            if (loggedInUser != null) {
-                existingUser.setUpdatedBy(loggedInUser.getEmail());
-            } else {
-                existingUser.setUpdatedBy("admin@admin.com");
-            }
-            existingUser.setDeleted(true);
-            userRepo.save(existingUser);
+        if (existingUser == null) {
+            throw new NoRecordFoundException("User is not found");
         }
+
+        final User loggedInUser = authService.getLoggedInUser();
+
+        existingUser.setUpdatedBy(loggedInUser.getEmail());
+        existingUser.setDeleted(true);
+
+        userRepo.save(existingUser);
     }
 
     @Override
     public User getNonDeletedUserByEmail(String email) {
         validateString(email);
         final List<User> userList = userRepo.findByEmailAndIsDeleted(email, false);
-        if (CollectionUtils.isNotEmpty(userList)) {
-            return userList.get(0);
+        if (CollectionUtils.isEmpty(userList)) {
+            return null;
         }
-        return null;
+        return userList.get(0);
+    }
+
+    @Override
+    public boolean isExistByEmail(String email) {
+        validateString(email);
+        final User user = getNonDeletedUserByEmail(email);
+        return Optional.ofNullable(user).isPresent();
     }
 
     @Override
@@ -138,7 +137,7 @@ public class UserServiceImpl implements UserService {
     private void validateString(final String str) {
         if (StringUtils.isBlank(str)) {
             log.error("Please add a valid ID. {}",str);
-            throw new NullPointerException("Please add a valid ID.");
+            throw new BillMonitorValidationException();
         }
     }
 
@@ -153,12 +152,10 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isNotBlank(newUser.getEmail())) {
             existingUser.setEmail(newUser.getEmail());
         }
-        if (loggedInUser != null) {
-            existingUser.setUpdatedBy(loggedInUser.getEmail());
-        }
         if (CollectionUtils.isNotEmpty(newUser.getServices())) {
             existingUser.setServices(newUser.getServices());
         }
+        existingUser.setUpdatedBy(loggedInUser.getEmail());
     }
 
 }

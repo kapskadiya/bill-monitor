@@ -3,13 +3,14 @@ package com.kashyap.homeIdeas.billmonitor.resource.admin;
 import com.kashyap.homeIdeas.billmonitor.config.security.JWTTokenUtil;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
 import com.kashyap.homeIdeas.billmonitor.dto.AuthRequest;
-import com.kashyap.homeIdeas.billmonitor.dto.Failure;
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,15 +41,10 @@ public class AuthResource {
     @PostMapping("/login")
     public ApplicationResponse login(@RequestBody AuthRequest authRequest) {
         final ApplicationResponse response = new ApplicationResponse();
+        final Map<String, Object> success = new HashMap<>();
 
-        final User user = userService.getNonDeletedUserByEmail(authRequest.getEmail());
-
-        if (user == null) {
-            final Failure failure = new Failure();
-            failure.setReason("User not exist in the system");
-            response.setFailure(failure);
-
-            return response;
+        if (!userService.isExistByEmail(authRequest.getEmail())) {
+            throw new NoRecordFoundException("User is not found.");
         }
 
         try {
@@ -57,19 +53,20 @@ public class AuthResource {
 
             final User loggedInUser = (User) authentication.getPrincipal();
 
-            final Map<String, Object> success = new HashMap<>();
+            response.setSuccess(true);
+            response.setMessage("User is successfully logged in");
+
             success.put("token", jwtTokenUtil.generateAccessToken(loggedInUser));
             success.put("user", UserUtil.buildDto(loggedInUser));
-            response.setSuccess(success);
+
+            response.setData(success);
 
             return response;
         } catch (BadCredentialsException bce) {
             log.error("Error occur while log-in. {}", bce.getMessage());
-            final Failure failure = new Failure();
-            failure.setException(bce.toString());
-            failure.setReason(bce.getMessage());
-            response.setFailure(failure);
-
+            response.setSuccess(false);
+            response.setMessage(bce.getMessage());
+            response.setCode(HttpStatus.BAD_REQUEST.value());
             return response;
         }
     }

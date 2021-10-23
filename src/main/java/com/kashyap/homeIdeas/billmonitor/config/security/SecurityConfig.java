@@ -1,5 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.config.security;
 
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return email -> {
             final UserDetails user = userService.getNonDeletedUserByEmail(email);
             if (user == null) {
-                throw new UsernameNotFoundException(String.format("User: %s, not found", email));
+                throw new NoRecordFoundException(String.format("User: %s, not found", email));
             }
             return user;
         };

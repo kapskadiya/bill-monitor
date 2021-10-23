@@ -1,5 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.config.security;
 
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -47,6 +48,10 @@ public class JWTTokenFilter extends OncePerRequestFilter {
 
         // Get user identity and set it on the spring security context
         final UserDetails userDetails = userService.getNonDeletedUserByEmail(jwtTokenUtil.getUsername(token));
+
+        if (userDetails == null) {
+            throw new NoRecordFoundException("User is not found");
+        }
 
         final UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(

@@ -1,5 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.service.impl;
 
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
@@ -35,62 +36,42 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public void save(Bill bill) {
-        if (bill == null) {
-            throw new IllegalArgumentException("bill object is null.");
-        }
 
         final User loggedInUser = authService.getLoggedInUser();
-        final String createdBy = loggedInUser != null ? loggedInUser.getId() : "admin@admin.com";
 
-        bill.setCreatedBy(createdBy);
+        bill.setCreatedBy(loggedInUser.getId());
         bill.setCreatedDate(new Date());
         repository.save(bill);
     }
 
     @Override
     public boolean isExist(String billId) {
-        final Optional<Bill> bill = repository.findById(billId);
-        return bill.isPresent();
+        return repository.existsById(billId);
     }
 
     @Override
     public Bill getById(String billId) {
-        if (StringUtils.isBlank(billId)) {
-            log.error("BillId is empty");
-            return new Bill();
-        }
         final Optional<Bill> bill = repository.findById(billId);
-        return bill.orElse(new Bill());
+        return bill.orElseThrow(NoRecordFoundException::new);
     }
 
     @Override
     public Bill getByBillId(String billId) {
-        if (StringUtils.isBlank(billId)) {
-            log.error("BillId is empty");
-            return new Bill();
-        }
+
         final List<Bill> billList = repository.findByBillId(billId);
         if (CollectionUtils.isEmpty(billList)) {
-            throw new IllegalArgumentException("Bill is not present in the system.");
+            throw new NoRecordFoundException();
         }
         return billList.get(0);
     }
 
     @Override
     public List<Bill> getByCustomerId(String customerId) {
-        if (StringUtils.isBlank(customerId)) {
-            log.error("CustomerName is empty");
-            return new ArrayList<>();
-        }
         return repository.findByCustomerId(customerId);
     }
 
     @Override
     public void update(Bill newBill) {
-        if (newBill == null) {
-            throw new IllegalArgumentException("Bill object is null.");
-        }
-
         final Bill updatedBill = getByBillId(newBill.getBillId());
 
         if (StringUtils.isNotBlank(newBill.getOrgName())) {
@@ -143,9 +124,8 @@ public class BillServiceImpl implements BillService {
         }
 
         final User loggedInUser = authService.getLoggedInUser();
-        final String updatedBy = loggedInUser != null ? loggedInUser.getId() : "admin@admin.com";
 
-        updatedBill.setUpdatedBy(updatedBy);
+        updatedBill.setUpdatedBy(loggedInUser.getId());
         updatedBill.setUpdatedDate(new Date());
 
         repository.save(updatedBill);

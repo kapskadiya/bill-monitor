@@ -1,8 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.resource.admin;
 
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
-import com.kashyap.homeIdeas.billmonitor.dto.Failure;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
+import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
@@ -12,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -54,22 +52,11 @@ public class UserResource {
         final ApplicationResponse response = new ApplicationResponse();
 
         final User user = UserUtil.buildUser(dto);
-        try {
-            userService.save(user);
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("isSaved", true);
-        success.put("message", "resource saved successfully");
-        response.setSuccess(success);
+        userService.save(user);
 
-        response.setHttpCode(HttpStatus.CREATED.value());
+        response.setSuccess(true);
+        response.setMessage("resource saved successfully");
+        response.setCode(HttpStatus.CREATED.value());
         return response;
     }
 
@@ -79,52 +66,49 @@ public class UserResource {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(dto.getEmail())) {
-            final Failure failure = new Failure();
-            failure.setReason("Email is required.");
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
+            throw new BillMonitorValidationException("email is empty");
         }
 
         final User user = UserUtil.buildUser(dto);
-        try {
-            userService.update(user);
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getCause().getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("isUpdated", true);
-        success.put("message", "resource updated successfully");
-        response.setSuccess(success);
+        userService.update(user);
 
-        response.setHttpCode(HttpStatus.NO_CONTENT.value());
+        response.setSuccess(true);
+        response.setMessage("resource updated successfully");
+        response.setCode(HttpStatus.NO_CONTENT.value());
         return response;
     }
 
 
     @GetMapping(value = "/id/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable String id) {
-        final User user = userService.getById(id);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public ApplicationResponse getById(@PathVariable String id) {
+        final ApplicationResponse response = new ApplicationResponse();
+
         final UserDto dto = UserUtil.buildDto(userService.getById(id));
-        return ResponseEntity.ok().body(dto);
+
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(dto);
+        response.setCode(HttpStatus.OK.value());
+        return response;
     }
 
     @GetMapping(value = "/email/{email}")
-    public ResponseEntity<UserDto> getByUsername(@PathVariable String email) {
+    public ApplicationResponse getByUsername(@PathVariable String email) {
+        final ApplicationResponse response = new ApplicationResponse();
+
         final User user = userService.getNonDeletedUserByEmail(email);
+
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            throw new NoRecordFoundException("User is not found");
         }
+
         final UserDto dto = UserUtil.buildDto(user);
-        return ResponseEntity.ok().body(dto);
+
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(dto);
+        response.setCode(HttpStatus.OK.value());
+        return response;
     }
 
 
@@ -132,22 +116,12 @@ public class UserResource {
     @DeleteMapping(value = "/delete")
     public ApplicationResponse remove(@RequestParam(value = "email") String email) {
         final ApplicationResponse response = new ApplicationResponse();
-        try {
-            userService.removeByEmail(email);
-        } catch (IllegalArgumentException iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getCause().getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
-        }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("isDeleted", true);
-        success.put("message", "resource deleted successfully");
-        response.setSuccess(success);
 
-        response.setHttpCode(HttpStatus.NO_CONTENT.value());
+        userService.removeByEmail(email);
+
+        response.setSuccess(true);
+        response.setMessage("User deleted successfully");
+        response.setCode(HttpStatus.OK.value());
         return response;
     }
 
@@ -156,24 +130,15 @@ public class UserResource {
         final ApplicationResponse response = new ApplicationResponse();
         final List<UserDto> userList = new ArrayList<>();
 
-        try {
-            final List<User> deletedUserList = userService.getDeletedUsers();
-            if (CollectionUtils.isNotEmpty(deletedUserList)) {
-                userList.addAll(deletedUserList.stream().map(UserUtil::buildDto).collect(Collectors.toList()));
-            }
-        } catch (Exception iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getCause().getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
+        final List<User> deletedUserList = userService.getDeletedUsers();
+        if (CollectionUtils.isNotEmpty(deletedUserList)) {
+            userList.addAll(deletedUserList.stream().map(UserUtil::buildDto).collect(Collectors.toList()));
         }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("deleteUsers", userList);
-        response.setSuccess(success);
 
-        response.setHttpCode(HttpStatus.NO_CONTENT.value());
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(userList);
+        response.setCode(HttpStatus.OK.value());
         return response;
     }
 
@@ -182,53 +147,34 @@ public class UserResource {
         final ApplicationResponse response = new ApplicationResponse();
         final List<UserDto> userList = new ArrayList<>();
 
-        try {
-            final List<User> nonDeletedUserList = userService.getNonDeletedUsers();
-            if (CollectionUtils.isNotEmpty(nonDeletedUserList)) {
-                userList.addAll(nonDeletedUserList.stream().map(UserUtil::buildDto).collect(Collectors.toList()));
-            }
-        } catch (Exception iae) {
-            final Failure failure = new Failure();
-            failure.setReason(iae.getCause().getMessage());
-            failure.setException(iae.toString());
-            response.setFailure(failure);
-            response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-            return response;
+        final List<User> nonDeletedUserList = userService.getNonDeletedUsers();
+        if (CollectionUtils.isNotEmpty(nonDeletedUserList)) {
+            userList.addAll(nonDeletedUserList.stream().map(UserUtil::buildDto).collect(Collectors.toList()));
         }
-        final Map<String, Object> success = new HashMap<>();
-        success.put("nonDeletedUsers", userList);
-        response.setSuccess(success);
 
-        response.setHttpCode(HttpStatus.NO_CONTENT.value());
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(userList);
+        response.setCode(HttpStatus.OK.value());
         return response;
     }
 
     @GetMapping(value = "/search")
     public ApplicationResponse search(@RequestParam(value = "keyword") String keyword) {
         final ApplicationResponse response = new ApplicationResponse();
+        final List<UserDto> userList = new ArrayList<>();
+
         if (StringUtils.isNotBlank(keyword)) {
-            final List<UserDto> userList = new ArrayList<>();
-
-            try {
-                final List<User> nonDeletedUserList = userService.search(keyword);
-                if (CollectionUtils.isNotEmpty(nonDeletedUserList)) {
-                    userList.addAll(nonDeletedUserList.stream().map(UserUtil::buildDto).collect(Collectors.toList()));
-                }
-            } catch (Exception iae) {
-                final Failure failure = new Failure();
-                failure.setReason(iae.getCause().getMessage());
-                failure.setException(iae.toString());
-                response.setFailure(failure);
-                response.setHttpCode(HttpStatus.BAD_REQUEST.value());
-                return response;
+            final List<User> nonDeletedUserList = userService.search(keyword);
+            if (CollectionUtils.isNotEmpty(nonDeletedUserList)) {
+                userList.addAll(nonDeletedUserList.stream().map(UserUtil::buildDto).collect(Collectors.toList()));
             }
-            final Map<String, Object> success = new HashMap<>();
-            success.put("users", userList);
-            response.setSuccess(success);
 
-            response.setHttpCode(HttpStatus.NO_CONTENT.value());
-            return response;
         }
+        response.setSuccess(true);
+        response.setMessage("Data Found");
+        response.setData(userList);
+        response.setCode(HttpStatus.OK.value());
         return response;
     }
 }
