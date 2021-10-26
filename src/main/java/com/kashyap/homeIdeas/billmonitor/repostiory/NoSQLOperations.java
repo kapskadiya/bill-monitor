@@ -2,6 +2,8 @@ package com.kashyap.homeIdeas.billmonitor.repostiory;
 
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,4 +19,6 @@ public interface NoSQLOperations {
     List<String> getOnlyIds(String indexName, String field, String value) throws IOException;
 
     void bulkUpdate(String indexName, List<String> esIdList, String field, String value) throws IOException;
+
+    SearchResponse getSearchResponse(SearchRequest searchRequest) throws IOException;
 }

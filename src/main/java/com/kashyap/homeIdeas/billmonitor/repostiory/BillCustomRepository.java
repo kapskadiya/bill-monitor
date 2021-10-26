@@ -1,18 +1,26 @@
 package com.kashyap.homeIdeas.billmonitor.repostiory;
 
+import com.kashyap.homeIdeas.billmonitor.constant.BillType;
+import com.kashyap.homeIdeas.billmonitor.constant.TimeInterval;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
+import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface BillCustomRepository {
     boolean bulkInsert(List<Bill> billList) throws IOException;
 
     void updateIsDeleted(String id, boolean isDeleted) throws IOException;
 
-    String getOnlyESIdByBillId(String billId) throws IOException;
+    String findOnlyESIdByBillId(String billId) throws IOException;
 
-    List<String> getOnlyESIdsByCustomerId(String customerId) throws IOException;
+    List<String> findOnlyESIdsByCustomerId(String customerId) throws IOException;
 
     void bulkPartialUpdate(List<String> esIdList, String field, String value) throws IOException;
+
+    List<ChartValue> findAmountAndTimeByAgg(BillType billType, TimeInterval timeInterval) throws IOException;
+
+    List<Map<String, Object>> findMaxAmountPerYear(BillType billType) throws IOException;
 }

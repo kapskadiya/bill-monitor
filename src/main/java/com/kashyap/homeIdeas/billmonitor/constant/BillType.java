@@ -1,4 +1,7 @@
-package com.kashyap.homeIdeas.billmonitor.model;
+package com.kashyap.homeIdeas.billmonitor.constant;
+
+import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
+import org.apache.commons.lang3.StringUtils;
 
 public enum BillType {
     ELECTRICITY,
@@ -8,6 +11,9 @@ public enum BillType {
     BROADBAND;
 
     public static BillType getBillType(String type) {
+        if (StringUtils.isBlank(type)) {
+            throw new BillMonitorValidationException("Bill type should be valid.");
+        }
 
         final String typeInLowercase = type.toLowerCase();
 
@@ -23,7 +29,7 @@ public enum BillType {
             case "broadband":
                 return BillType.BROADBAND;
             default:
-               throw new IllegalArgumentException("Bill type should be valid.");
+               throw new BillMonitorValidationException("Bill type should be valid.");
         }
     }
 }

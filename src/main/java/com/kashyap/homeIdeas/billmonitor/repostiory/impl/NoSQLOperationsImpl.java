@@ -10,15 +10,10 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.reindex.BulkByScrollResponse;
-import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
@@ -110,5 +105,10 @@ public class NoSQLOperationsImpl implements NoSQLOperations {
         });
 
         client.bulk(bulkRequest, RequestOptions.DEFAULT);
+    }
+
+    @Override
+    public SearchResponse getSearchResponse(SearchRequest searchRequest) throws IOException {
+        return client.search(searchRequest, RequestOptions.DEFAULT);
     }
 }

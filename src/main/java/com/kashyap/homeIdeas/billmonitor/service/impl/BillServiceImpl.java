@@ -2,7 +2,7 @@ package com.kashyap.homeIdeas.billmonitor.service.impl;
 
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
-import com.kashyap.homeIdeas.billmonitor.model.BillType;
+import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -137,7 +136,7 @@ public class BillServiceImpl implements BillService {
             log.error("BillId is empty");
             return;
         }
-        final String esId = repository.getOnlyESIdByBillId(billId);
+        final String esId = repository.findOnlyESIdByBillId(billId);
 
         if (StringUtils.isNotBlank(esId)) {
             repository.updateIsDeleted(esId, true);
@@ -150,7 +149,7 @@ public class BillServiceImpl implements BillService {
             log.error("customerId is empty");
             return;
         }
-        final List<String> esIdList = repository.getOnlyESIdsByCustomerId(customerId);
+        final List<String> esIdList = repository.findOnlyESIdsByCustomerId(customerId);
         if (CollectionUtils.isEmpty(esIdList)) {
             return;
         }
@@ -165,6 +164,13 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public boolean bulkSave(List<Bill> billList) throws IOException {
+        final User loggedInUser = authService.getLoggedInUser();
+
+        billList.forEach(bill -> {
+            bill.setCreatedBy(loggedInUser.getId());
+            bill.setCreatedDate(new Date());
+        });
+
         return repository.bulkInsert(billList);
     }
 

@@ -210,15 +210,6 @@ public class BillResource {
         final BillDto dto = Optional.ofNullable(billDto)
                 .orElseThrow(() -> new BillMonitorValidationException("Given data is empty"));
 
-        final PaymentDetailDto paymentDetailDto = dto.getPaymentDetail();
-        final PaymentDetail paymentDetail = new PaymentDetailBuilder()
-                .setTransactionId(paymentDetailDto.getTransactionId())
-                .setMethod(paymentDetailDto.getMethod())
-                .setStatus(paymentDetailDto.getStatus())
-                .setMethodNumber(paymentDetailDto.getMethodNumber())
-                .setType(paymentDetailDto.getType())
-                .build();
-
         final Bill bill = new BillBuilder()
                 .setBillId(dto.getBillId())
                 .setOrgName(dto.getOrgName())
@@ -228,10 +219,22 @@ public class BillResource {
                 .setIssueDate(dto.getIssueDate())
                 .setDueDate(dto.getDueDate())
                 .setPayDate(dto.getPayDate())
-                .setPaymentDetail(paymentDetail)
                 .setTotalAmountAfterExpiry(dto.getTotalAmountAfterExpiry())
                 .setExtraInfo(dto.getExtraInfo())
                 .build();
+
+        if(dto.getPaymentDetail() != null) {
+            final PaymentDetailDto paymentDetailDto = dto.getPaymentDetail();
+            final PaymentDetail paymentDetail = new PaymentDetailBuilder()
+                    .setTransactionId(paymentDetailDto.getTransactionId())
+                    .setMethod(paymentDetailDto.getMethod())
+                    .setStatus(paymentDetailDto.getStatus())
+                    .setMethodNumber(paymentDetailDto.getMethodNumber())
+                    .setType(paymentDetailDto.getType())
+                    .build();
+
+            bill.setPaymentDetail(paymentDetail);
+        }
 
         return Optional.ofNullable(bill)
                 .orElseThrow(() -> new BillMonitorValidationException("Data is not prepared properly"));

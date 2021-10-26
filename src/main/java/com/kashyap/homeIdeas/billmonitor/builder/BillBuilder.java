@@ -1,7 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
-import com.kashyap.homeIdeas.billmonitor.model.BillType;
+import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -1,7 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.service;
 
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
-import com.kashyap.homeIdeas.billmonitor.model.BillType;
+import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 
 import java.io.IOException;
 import java.util.List;
