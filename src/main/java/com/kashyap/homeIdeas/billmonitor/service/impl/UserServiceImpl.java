@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
 
         final User loggedInUser = authService.getLoggedInUser();
         user.setCreatedBy(loggedInUser.getEmail());
+        user.setCreatedDate(new Date());
         user.setDeleted(false);
 
         userRepo.save(user);
@@ -102,6 +104,7 @@ public class UserServiceImpl implements UserService {
         final User loggedInUser = authService.getLoggedInUser();
 
         existingUser.setUpdatedBy(loggedInUser.getEmail());
+        existingUser.setUpdatedDate(new Date());
         existingUser.setDeleted(true);
 
         userRepo.save(existingUser);
@@ -156,6 +159,7 @@ public class UserServiceImpl implements UserService {
             existingUser.setServices(newUser.getServices());
         }
         existingUser.setUpdatedBy(loggedInUser.getEmail());
+        existingUser.setUpdatedDate(new Date());
     }
 
 }

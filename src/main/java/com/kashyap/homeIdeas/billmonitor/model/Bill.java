@@ -3,6 +3,7 @@ package com.kashyap.homeIdeas.billmonitor.model;
 import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -30,13 +31,13 @@ public class Bill implements Serializable {
     @Field(type = FieldType.Keyword)
     private BillType type;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
     private Date issueDate;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
     private Date dueDate;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
     private Date payDate;
 
     @Field(type = FieldType.Nested)
@@ -57,10 +58,10 @@ public class Bill implements Serializable {
     @Field(type = FieldType.Text)
     private String updatedBy;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
     private Date createdDate;
 
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
     private Date updatedDate;
 
     @Field(type = FieldType.Boolean)

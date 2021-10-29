@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public List<Map<String, Object>> getMaxAmountPerYear(BillType billType) throws IOException {
-        return billRepository.findMaxAmountPerYear(billType);
+        final List<Map<String, Object>> dataList = billRepository.findMaxAmountPerYear(billType);
+
+        dataList.forEach(dataMap ->
+            dataMap.computeIfPresent("issueDate",(k,v) -> v = new Date(Long.parseLong(v.toString()))));
+
+        return dataList;
+    }
+
+    @Override
+    public Double getTotalAmountSoFar(BillType billType) throws IOException {
+        return billRepository.findTotalAmountByType(billType);
     }
 
 }

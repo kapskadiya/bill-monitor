@@ -23,4 +23,6 @@ public interface BillCustomRepository {
     List<ChartValue> findAmountAndTimeByAgg(BillType billType, TimeInterval timeInterval) throws IOException;
 
     List<Map<String, Object>> findMaxAmountPerYear(BillType billType) throws IOException;
+
+    Double findTotalAmountByType(BillType billType) throws IOException;
 }

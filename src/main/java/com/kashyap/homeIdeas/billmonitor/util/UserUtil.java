@@ -52,6 +52,8 @@ public class UserUtil {
         dto.setRole(user.getRole().name());
         dto.setCreatedBy(user.getCreatedBy());
         dto.setUpdatedBy(user.getUpdatedBy());
+        dto.setCreatedDate(user.getCreatedDate());
+        dto.setUpdatedDate(user.getUpdatedDate());
         if (CollectionUtils.isNotEmpty(user.getServices())){
             final Map<String, String> services = user.getServices()
                     .stream()

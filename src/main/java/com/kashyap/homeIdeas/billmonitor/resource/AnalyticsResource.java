@@ -1,10 +1,10 @@
 package com.kashyap.homeIdeas.billmonitor.resource;
 
+import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.constant.TimeInterval;
 import com.kashyap.homeIdeas.billmonitor.dto.AmountVsTimeDto;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 import com.kashyap.homeIdeas.billmonitor.service.AnalyticsService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +73,24 @@ public class AnalyticsResource {
 
         response.setSuccess(true);
         response.setMessage(message);
+        response.setCode(HttpStatus.OK.value());
+        response.setData(data);
+
+        return response;
+    }
+
+    @GetMapping(value = "/getTotalAmount")
+    public ApplicationResponse getTotalAmount(@RequestParam(value = "billType") String billType) throws IOException {
+        final ApplicationResponse response = new ApplicationResponse();
+        if (StringUtils.isBlank(billType)) {
+            throw new BillMonitorValidationException("Bill type is empty");
+        }
+        final BillType type = BillType.getBillType(billType);
+
+        final Double data = service.getTotalAmountSoFar(type);
+
+        response.setSuccess(true);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 

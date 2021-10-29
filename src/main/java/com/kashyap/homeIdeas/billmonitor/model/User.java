@@ -3,6 +3,7 @@ package com.kashyap.homeIdeas.billmonitor.model;
 import org.elasticsearch.common.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Document(indexName = "user")
@@ -48,6 +50,12 @@ public class User implements UserDetails {
 
     @Field(type = FieldType.Nested)
     private List<Service> services;
+
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
+    private Date createdDate;
+
+    @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
+    private Date updatedDate;
 
     public static class Service {
         private String name;
@@ -185,5 +193,21 @@ public class User implements UserDetails {
 
     public void setServices(List<Service> services) {
         this.services = services;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 }

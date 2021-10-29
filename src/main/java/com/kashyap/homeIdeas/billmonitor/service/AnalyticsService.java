@@ -12,4 +12,6 @@ public interface AnalyticsService {
     List<ChartValue> getAmountAndTime(BillType billType, TimeInterval timeIn) throws IOException;
 
     List<Map<String, Object>> getMaxAmountPerYear(BillType billType) throws IOException;
+
+    Double getTotalAmountSoFar(BillType billType) throws IOException;
 }

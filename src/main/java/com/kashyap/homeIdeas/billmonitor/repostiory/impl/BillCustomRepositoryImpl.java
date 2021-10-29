@@ -14,19 +14,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.Sum;
 import org.elasticsearch.search.aggregations.metrics.TopHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -40,8 +36,6 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +116,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("time_amount_agg",
-                QueryBuilders.termQuery("type.keyword", billType.name()));
+                QueryBuilders.termQuery("type", billType.name()));
 
         final DateHistogramInterval dateHistogramInterval = getDateHistogramIntervalByTimeInterval(timeInterval);
 
@@ -187,7 +181,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("time_amount_agg",
-                QueryBuilders.termQuery("type.keyword", billType.name()));
+                QueryBuilders.termQuery("type", billType.name()));
 
         final AggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
                 .field("issueDate")
@@ -209,6 +203,9 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
 
         if (searchResponse != null) {
             final Filter filter = searchResponse.getAggregations().get("time_amount_agg");
+            if (filter == null) {
+                return finalResult;
+            }
             final Histogram histogram = filter.getAggregations().get("time_agg");
 
             if (histogram != null) {
@@ -228,9 +225,36 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
                 });
             }
         }
-
         return finalResult;
+    }
 
+    @Override
+    public Double findTotalAmountByType(BillType billType) throws IOException {
+        final SearchRequest searchRequest = new SearchRequest(indexName);
+        final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("type_filter_agg",
+                QueryBuilders.termQuery("type", billType.name()));
+
+        final AggregationBuilder sumAggregationBuilder = AggregationBuilders.sum("sum_agg").field("totalAmount");
+
+        mainAggregation.subAggregation(sumAggregationBuilder);
+
+        searchSourceBuilder.size(0);
+        searchRequest.source(searchSourceBuilder.aggregation(mainAggregation));
+
+        final SearchResponse searchResponse = noSQLOperations.getSearchResponse(searchRequest);
+
+        if (searchResponse != null) {
+            final Filter filter = searchResponse.getAggregations().get("type_filter_agg");
+            if (filter != null) {
+                final Sum sum = filter.getAggregations().get("sum_agg");
+                if (sum != null) {
+                    return sum.getValue();
+                }
+            }
+        }
+
+        return 0D;
     }
 
     private ObjectMapper getDefaultObjectMapper(){
