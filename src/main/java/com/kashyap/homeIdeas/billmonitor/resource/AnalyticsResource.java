@@ -8,6 +8,7 @@ import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationExceptio
 import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 import com.kashyap.homeIdeas.billmonitor.service.AnalyticsService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,7 +80,31 @@ public class AnalyticsResource {
         return response;
     }
 
-    @GetMapping(value = "/getTotalAmount")
+    @GetMapping(value = "/minAmountPerYear")
+    public ApplicationResponse getMinAmountPerYear(@RequestParam(name = "billType") String billType) throws IOException {
+
+        final ApplicationResponse response = new ApplicationResponse();
+
+        if (StringUtils.isBlank(billType)) {
+            throw new BillMonitorValidationException("Bill type is empty");
+        }
+
+        final BillType type = BillType.getBillType(billType);
+        final List<Map<String, Object>> data = service.getMinAmountPerYear(type);
+
+        final String message = CollectionUtils.isEmpty(data)
+                ? "Data is empty"
+                : "Data Found";
+
+        response.setSuccess(true);
+        response.setMessage(message);
+        response.setCode(HttpStatus.OK.value());
+        response.setData(data);
+
+        return response;
+    }
+
+    @GetMapping(value = "/totalAmount")
     public ApplicationResponse getTotalAmount(@RequestParam(value = "billType") String billType) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
         if (StringUtils.isBlank(billType)) {
@@ -96,4 +121,66 @@ public class AnalyticsResource {
 
         return response;
     }
+
+    @GetMapping(value = "/amountPerTypePerYear")
+    public ApplicationResponse getAmountPerTypePerYear() throws IOException {
+
+        final ApplicationResponse response = new ApplicationResponse();
+
+        final Map<String, Map<String, Double>> data = service.getAmountPerTypePerYear();
+
+        final String message = MapUtils.isEmpty(data)
+                ? "Data is empty"
+                : "Data Found";
+
+        response.setSuccess(true);
+        response.setMessage(message);
+        response.setCode(HttpStatus.OK.value());
+        response.setData(data);
+
+        return response;
+    }
+
+    @PostMapping(value = "/totalAmountPerType")
+    public ApplicationResponse getTotalAmountPerType() throws IOException {
+        final ApplicationResponse response = new ApplicationResponse();
+
+        final List<ChartValue> data = service.getTotalAmountPerType();
+
+        final String message = CollectionUtils.isEmpty(data)
+                ? "Data is empty"
+                : "Data Found";
+
+        response.setSuccess(true);
+        response.setMessage(message);
+        response.setCode(HttpStatus.OK.value());
+        response.setData(data);
+
+        return response;
+    }
+
+    @GetMapping(value = "/unpaidBills")
+    public ApplicationResponse getUnpaidBills(@RequestParam(name = "billType") String billType) throws IOException {
+
+        final ApplicationResponse response = new ApplicationResponse();
+
+        if (StringUtils.isBlank(billType)) {
+            throw new BillMonitorValidationException("Bill type is empty");
+        }
+
+        final BillType type = BillType.getBillType(billType);
+        final List<Map<String, Object>> data = service.getUnpaidBillsByType(type);
+
+        final String message = CollectionUtils.isEmpty(data)
+                ? "Data is empty"
+                : "Data Found";
+
+        response.setSuccess(true);
+        response.setMessage(message);
+        response.setCode(HttpStatus.OK.value());
+        response.setData(data);
+
+        return response;
+    }
+
 }

@@ -13,5 +13,13 @@ public interface AnalyticsService {
 
     List<Map<String, Object>> getMaxAmountPerYear(BillType billType) throws IOException;
 
+    List<Map<String, Object>> getMinAmountPerYear(BillType billType) throws IOException;
+
+    Map<String, Map<String, Double>> getAmountPerTypePerYear() throws IOException;
+
     Double getTotalAmountSoFar(BillType billType) throws IOException;
+
+    List<ChartValue> getTotalAmountPerType() throws IOException;
+
+    List<Map<String, Object>> getUnpaidBillsByType(BillType billType) throws IOException;
 }

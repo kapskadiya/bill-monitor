@@ -24,5 +24,13 @@ public interface BillCustomRepository {
 
     List<Map<String, Object>> findMaxAmountPerYear(BillType billType) throws IOException;
 
+    List<Map<String, Object>> findMinAmountPerYear(BillType billType) throws IOException;
+
     Double findTotalAmountByType(BillType billType) throws IOException;
+
+    Map<String, Map<String, Double>> findTotalAmountPerTypePerYear() throws IOException;
+
+    List<ChartValue> findTotalAmountPerType() throws IOException;
+
+    List<Map<String, Object>> findUnPaidBillsByType(BillType billType) throws IOException;
 }

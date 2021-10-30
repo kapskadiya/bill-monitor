@@ -12,8 +12,11 @@ import com.kashyap.homeIdeas.billmonitor.repostiory.BillCustomRepository;
 import com.kashyap.homeIdeas.billmonitor.repostiory.NoSQLOperations;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -21,8 +24,11 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.Sum;
 import org.elasticsearch.search.aggregations.metrics.TopHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -173,8 +179,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         return finalResultList;
     }
 
-    @Override
-    public List<Map<String, Object>> findMaxAmountPerYear(BillType billType) throws IOException {
+    private List<Map<String, Object>> findAmountBySortingPerYear(BillType billType, SortOrder order) throws IOException {
 
         final List<Map<String, Object>> finalResult = new ArrayList<>();
 
@@ -190,7 +195,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
 
         histogramAggregationBuilder.subAggregation(AggregationBuilders
                 .topHits("topHits_agg")
-                .sort(SortBuilders.fieldSort("totalAmount").order(SortOrder.DESC))
+                .sort(SortBuilders.fieldSort("totalAmount").order(order))
                 .size(1).fetchSource(new String[]{"issueDate", "totalAmount"}, null));
 
 
@@ -229,6 +234,16 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
     }
 
     @Override
+    public List<Map<String, Object>> findMaxAmountPerYear(BillType billType) throws IOException {
+        return findAmountBySortingPerYear(billType, SortOrder.DESC);
+    }
+
+    @Override
+    public List<Map<String, Object>> findMinAmountPerYear(BillType billType) throws IOException {
+        return findAmountBySortingPerYear(billType, SortOrder.ASC);
+    }
+
+    @Override
     public Double findTotalAmountByType(BillType billType) throws IOException {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -255,6 +270,116 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         }
 
         return 0D;
+    }
+
+    @Override
+    public Map<String, Map<String, Double>> findTotalAmountPerTypePerYear() throws IOException {
+        final SearchRequest searchRequest = new SearchRequest(indexName);
+        final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        final DateHistogramAggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
+                .field("issueDate")
+                .calendarInterval(DateHistogramInterval.YEAR)
+                .order(BucketOrder.key(true));
+
+        final TermsAggregationBuilder termAggregationBuilder = AggregationBuilders.terms("type_agg")
+                .field("type");
+
+        termAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field("totalAmount"));
+
+        histogramAggregationBuilder.subAggregation(termAggregationBuilder);
+
+        searchSourceBuilder.size(0);
+        searchRequest.source(searchSourceBuilder.aggregation(histogramAggregationBuilder));
+
+        final SearchResponse searchResponse = noSQLOperations.getSearchResponse(searchRequest);
+
+        final Map<String, Map<String, Double>> dataMap = new HashMap<>();
+        if (searchResponse != null) {
+            final Histogram histogram = searchResponse.getAggregations().get("time_agg");
+            if (histogram != null) {
+                histogram.getBuckets().forEach(hBucket -> {
+                    final Map<String, Double> innerMap = new HashMap<>();
+                    final Terms terms = hBucket.getAggregations().get("type_agg");
+                    if (terms != null) {
+                       terms.getBuckets().forEach(tBucket -> {
+                           final Sum sum = tBucket.getAggregations().get("amount_agg");
+                           if (sum != null) {
+                               innerMap.put(tBucket.getKeyAsString(), sum.getValue());
+                           }
+                       });
+                    }
+                    dataMap.put(hBucket.getKeyAsString(), innerMap);
+                });
+            }
+        }
+
+        return dataMap;
+    }
+
+    @Override
+    public List<ChartValue> findTotalAmountPerType() throws IOException {
+        final SearchRequest searchRequest = new SearchRequest(indexName);
+        final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        final TermsAggregationBuilder termAggregationBuilder = AggregationBuilders.terms("type_agg")
+                .field("type");
+
+        termAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field("totalAmount"));
+
+        searchSourceBuilder.size(0);
+        searchRequest.source(searchSourceBuilder.aggregation(termAggregationBuilder));
+
+        final SearchResponse searchResponse = noSQLOperations.getSearchResponse(searchRequest);
+
+        final List<ChartValue> chartValueList = new ArrayList<>();
+        if (searchResponse != null) {
+            final Terms terms = searchResponse.getAggregations().get("type_agg");
+            if (terms != null) {
+                terms.getBuckets().forEach(bucket -> {
+                    final Sum sum = bucket.getAggregations().get("amount_agg");
+                    if (sum != null) {
+                        chartValueList.add(new ChartValue(bucket.getKeyAsString(), String.valueOf(sum.getValue())));
+                    }
+                });
+            }
+        }
+
+        return chartValueList;
+    }
+
+    @Override
+    public List<Map<String, Object>> findUnPaidBillsByType(BillType billType) throws IOException {
+        final SearchRequest searchRequest = new SearchRequest(indexName);
+        final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        final BoolQueryBuilder mainBollQueryBuilder = QueryBuilders.boolQuery();
+        List<QueryBuilder> mustQueryBuilderList = mainBollQueryBuilder.must();
+        mustQueryBuilderList.add(QueryBuilders.termQuery("type", billType.name()));
+
+        final BoolQueryBuilder childBoolQueryBuilder = QueryBuilders.boolQuery();
+        final List<QueryBuilder> shouldQueryBuilderList = childBoolQueryBuilder.should();
+        shouldQueryBuilderList.add(QueryBuilders.nestedQuery("paymentDetail", QueryBuilders.termQuery("paymentDetail.status", "PENDING"), ScoreMode.Avg));
+        shouldQueryBuilderList.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("paymentDetail", QueryBuilders.existsQuery("paymentDetail"), ScoreMode.Avg)));
+
+        mustQueryBuilderList.add(childBoolQueryBuilder);
+
+        searchRequest.source(searchSourceBuilder.query(mainBollQueryBuilder));
+
+        final SearchResponse searchResponse = noSQLOperations.getSearchResponse(searchRequest);
+
+        final List<Map<String, Object>> billList = new ArrayList<>();
+        if (searchResponse != null) {
+            final SearchHit[] searchHits = searchResponse.getHits().getHits();
+
+            if (searchHits != null) {
+                for (SearchHit searchHit : searchHits) {
+                    billList.add(searchHit.getSourceAsMap());
+                }
+            }
+        }
+
+        return billList;
     }
 
     private ObjectMapper getDefaultObjectMapper(){
