@@ -125,10 +125,12 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
                 QueryBuilders.termQuery("type", billType.name()));
 
         final DateHistogramInterval dateHistogramInterval = getDateHistogramIntervalByTimeInterval(timeInterval);
+        final String dateFormat = getDateFormatByTimeInterval(timeInterval);
 
         final AggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
                 .field("issueDate")
                 .calendarInterval(dateHistogramInterval)
+                .format(dateFormat)
                 .order(BucketOrder.key(true));
         histogramAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field("totalAmount"));
 
@@ -145,6 +147,15 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
             case "DAY": return DateHistogramInterval.DAY;
             case "MONTH": return DateHistogramInterval.MONTH;
             case "YEAR": return DateHistogramInterval.YEAR;
+            default: throw new BillMonitorValidationException("Time interval value is empty.");
+        }
+    }
+
+    private String getDateFormatByTimeInterval(TimeInterval timeInterval) {
+        switch (timeInterval.name()) {
+            case "DAY": return "dd";
+            case "MONTH": return "MM-yyyy";
+            case "YEAR": return "yyyy";
             default: throw new BillMonitorValidationException("Time interval value is empty.");
         }
     }
@@ -191,6 +202,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final AggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
                 .field("issueDate")
                 .calendarInterval(DateHistogramInterval.YEAR)
+                .format("yyyy")
                 .order(BucketOrder.key(true));
 
         histogramAggregationBuilder.subAggregation(AggregationBuilders
@@ -280,6 +292,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final DateHistogramAggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
                 .field("issueDate")
                 .calendarInterval(DateHistogramInterval.YEAR)
+                .format("yyyy")
                 .order(BucketOrder.key(true));
 
         final TermsAggregationBuilder termAggregationBuilder = AggregationBuilders.terms("type_agg")

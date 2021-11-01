@@ -5,6 +5,7 @@ import com.kashyap.homeIdeas.billmonitor.constant.TimeInterval;
 import com.kashyap.homeIdeas.billmonitor.dto.AmountVsTimeDto;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
+import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 import com.kashyap.homeIdeas.billmonitor.service.AnalyticsService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,12 +45,12 @@ public class AnalyticsResource {
 
         final List<ChartValue> data = service.getAmountAndTime(type, timeIn);
 
-        final String message = CollectionUtils.isEmpty(data)
-                ? "Data is empty"
-                : "Data Found";
+        if (CollectionUtils.isEmpty(data)) {
+            throw new NoRecordFoundException();
+        }
 
         response.setSuccess(true);
-        response.setMessage(message);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -68,12 +69,12 @@ public class AnalyticsResource {
         final BillType type = BillType.getBillType(billType);
         final List<Map<String, Object>> data = service.getMaxAmountPerYear(type);
 
-        final String message = CollectionUtils.isEmpty(data)
-                ? "Data is empty"
-                : "Data Found";
+        if (CollectionUtils.isEmpty(data)) {
+            throw new NoRecordFoundException();
+        }
 
         response.setSuccess(true);
-        response.setMessage(message);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -92,12 +93,12 @@ public class AnalyticsResource {
         final BillType type = BillType.getBillType(billType);
         final List<Map<String, Object>> data = service.getMinAmountPerYear(type);
 
-        final String message = CollectionUtils.isEmpty(data)
-                ? "Data is empty"
-                : "Data Found";
+        if (CollectionUtils.isEmpty(data)) {
+            throw new NoRecordFoundException();
+        }
 
         response.setSuccess(true);
-        response.setMessage(message);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -122,37 +123,36 @@ public class AnalyticsResource {
         return response;
     }
 
-    @GetMapping(value = "/amountPerTypePerYear")
+    @GetMapping(value = "/totalAmountPerTypePerYear")
     public ApplicationResponse getAmountPerTypePerYear() throws IOException {
 
         final ApplicationResponse response = new ApplicationResponse();
 
         final Map<String, Map<String, Double>> data = service.getAmountPerTypePerYear();
 
-        final String message = MapUtils.isEmpty(data)
-                ? "Data is empty"
-                : "Data Found";
-
+        if (MapUtils.isEmpty(data)) {
+            throw new NoRecordFoundException();
+        }
         response.setSuccess(true);
-        response.setMessage(message);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
         return response;
     }
 
-    @PostMapping(value = "/totalAmountPerType")
+    @GetMapping(value = "/totalAmountPerType")
     public ApplicationResponse getTotalAmountPerType() throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
 
         final List<ChartValue> data = service.getTotalAmountPerType();
 
-        final String message = CollectionUtils.isEmpty(data)
-                ? "Data is empty"
-                : "Data Found";
+        if (CollectionUtils.isEmpty(data)) {
+            throw new NoRecordFoundException();
+        }
 
         response.setSuccess(true);
-        response.setMessage(message);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -171,12 +171,12 @@ public class AnalyticsResource {
         final BillType type = BillType.getBillType(billType);
         final List<Map<String, Object>> data = service.getUnpaidBillsByType(type);
 
-        final String message = CollectionUtils.isEmpty(data)
-                ? "Data is empty"
-                : "Data Found";
+        if (CollectionUtils.isEmpty(data)) {
+            throw new NoRecordFoundException();
+        }
 
         response.setSuccess(true);
-        response.setMessage(message);
+        response.setMessage("Data Found");
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
