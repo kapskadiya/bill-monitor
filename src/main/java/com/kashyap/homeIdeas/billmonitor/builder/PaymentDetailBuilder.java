@@ -6,6 +6,11 @@ import com.kashyap.homeIdeas.billmonitor.model.PaymentStatus;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentType;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * This is the payment detail builder which can help to build the PaymentDetail object using chain pattern.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class PaymentDetailBuilder {
 
     private final PaymentDetail paymentDetail;

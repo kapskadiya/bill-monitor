@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @ControllerAdvice
 @ResponseBody
 public class ControllerExceptionHandler {

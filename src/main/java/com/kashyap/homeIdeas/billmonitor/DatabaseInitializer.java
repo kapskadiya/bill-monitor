@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Component
 public class DatabaseInitializer implements ApplicationListener<ApplicationReadyEvent> {
 

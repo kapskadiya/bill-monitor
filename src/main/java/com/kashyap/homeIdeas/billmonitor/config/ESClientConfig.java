@@ -8,6 +8,11 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 
+/**
+ * This is the elasticsearch client configuration which can help to connect application with elasticsearch.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Configuration
 public class ESClientConfig extends AbstractElasticsearchConfiguration {
     @NotNull

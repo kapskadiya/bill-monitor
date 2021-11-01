@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Repository
 public class UserCustomRepositoryImpl implements UserCustomRepository {
 

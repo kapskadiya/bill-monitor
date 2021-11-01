@@ -1,5 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.exception;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class NoRecordFoundException extends RuntimeException{
 
     private String message;

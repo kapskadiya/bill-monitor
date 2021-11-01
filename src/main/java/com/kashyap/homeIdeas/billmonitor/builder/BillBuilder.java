@@ -9,6 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * This is the bill builder which can help to build the Bill object using chain pattern.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class BillBuilder {
 
     private final Bill bill;

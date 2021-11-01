@@ -1,7 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.util;
 
 import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
-import com.kashyap.homeIdeas.billmonitor.dto.BillDto;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
@@ -9,15 +8,17 @@ import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class UserUtil {
 
     private final static PasswordEncoder encoder = new BCryptPasswordEncoder();

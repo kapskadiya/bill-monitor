@@ -5,6 +5,10 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public interface UserRepository extends PagingAndSortingRepository<User, String>, UserCustomRepository {
 
     List<User> findByFirstname(final String firstname);

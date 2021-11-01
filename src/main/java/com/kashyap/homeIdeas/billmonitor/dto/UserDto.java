@@ -2,6 +2,7 @@ package com.kashyap.homeIdeas.billmonitor.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -11,23 +12,37 @@ import java.util.Map;
 
 public class UserDto {
 
+    @Schema(description = "firstname of the user", example = "Hritik")
     private String firstname;
+
+    @Schema(description = "lastname of the user", example = "Roshan")
     private String lastname;
 
+    @Schema(description = "Email address of the user.",
+            example = "hritik_roshan@mail.com", required = true)
     @NotEmpty
-    @Email
+    @Email(message = "Email Address")
+    @Size(max = 100)
     private String email;
 
+    @Schema(description = "password for the login",
+            example = "Password_123", required = true)
     @NotEmpty
-    @Size(min = 8, message = "password should have at least 8 characters")
+    @Size(min = 8, message = "Password must contain more than 8 characters")
     private String password;
 
+    @JsonIgnore
     private String role;
 
+    @JsonIgnore
     private String createdBy;
+
+    @JsonIgnore
     private String updatedBy;
 
+    @JsonIgnore
     private Date createdDate;
+    @JsonIgnore
     private Date updatedDate;
 
     private Map<String, String> services;

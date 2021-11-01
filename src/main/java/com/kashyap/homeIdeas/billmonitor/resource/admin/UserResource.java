@@ -7,6 +7,7 @@ import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is the User resource which can help to manage user related operation. like Create, Update, View, and Delete
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @RestController
 @RequestMapping("/rest/admin/user")
 public class UserResource {
@@ -46,6 +52,7 @@ public class UserResource {
         return "Welcome to the user rest module.";
     }
 
+    @Operation(summary = "Create new user")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/create")
     public ApplicationResponse create(@Valid @RequestBody UserDto dto) {
@@ -60,6 +67,7 @@ public class UserResource {
         return response;
     }
 
+    @Operation(summary = "Update existing user")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/update")
     public ApplicationResponse update(@RequestBody UserDto dto) {
@@ -78,7 +86,7 @@ public class UserResource {
         return response;
     }
 
-
+    @Operation(summary = "Get user by unique id")
     @GetMapping(value = "/id/{id}")
     public ApplicationResponse getById(@PathVariable String id) {
         final ApplicationResponse response = new ApplicationResponse();
@@ -92,6 +100,7 @@ public class UserResource {
         return response;
     }
 
+    @Operation(summary = "Get user by email id")
     @GetMapping(value = "/email/{email}")
     public ApplicationResponse getByUsername(@PathVariable String email) {
         final ApplicationResponse response = new ApplicationResponse();
@@ -111,7 +120,7 @@ public class UserResource {
         return response;
     }
 
-
+    @Operation(summary = "Delete user from the system")
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/delete")
     public ApplicationResponse remove(@RequestParam(value = "email") String email) {
@@ -125,6 +134,7 @@ public class UserResource {
         return response;
     }
 
+    @Operation(summary = "Get all deleted users", hidden = true)
     @GetMapping(value = "/getDeletedUsers")
     public ApplicationResponse getDeleteUsers() {
         final ApplicationResponse response = new ApplicationResponse();
@@ -142,6 +152,7 @@ public class UserResource {
         return response;
     }
 
+    @Operation(summary = "Get all non deleted users", hidden = true)
     @GetMapping(value = "/getNonDeletedUsers")
     public ApplicationResponse getNonDeleteUsers() {
         final ApplicationResponse response = new ApplicationResponse();
@@ -159,6 +170,7 @@ public class UserResource {
         return response;
     }
 
+    @Operation(summary = "Search user by keyword")
     @GetMapping(value = "/search")
     public ApplicationResponse search(@RequestParam(value = "keyword") String keyword) {
         final ApplicationResponse response = new ApplicationResponse();

@@ -10,6 +10,7 @@ import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.service.AttachmentService;
 import com.kashyap.homeIdeas.billmonitor.service.BillService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
@@ -36,6 +37,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * This is the Bill resource which can help to manage bills related operations. like Create, Update, View, and Delete
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @RestController
 @RequestMapping(value = "/rest/bill")
 public class BillResource {
@@ -48,6 +54,7 @@ public class BillResource {
     @Autowired
     private AttachmentService attachmentService;
 
+    @Operation(summary = "Create new bill")
     @PostMapping(value = "/create")
     public ApplicationResponse create(@RequestBody BillDto dto) {
         final ApplicationResponse response = new ApplicationResponse();
@@ -61,6 +68,7 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Update existing bill")
     @PutMapping("/update")
     public ApplicationResponse update(@RequestBody BillDto dto) {
         final ApplicationResponse response = new ApplicationResponse();
@@ -74,6 +82,7 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Create new bills in bulk")
     @PostMapping(value = "/bulk/create")
     public ApplicationResponse bulkCreate(@RequestBody List<BillDto> dtoList) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
@@ -95,6 +104,7 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Add attachment to the bill")
     @PostMapping(value = "/add/withAttachment")
     public ResponseEntity<String> saveWithAttachment(HttpServletRequest request,
                                                       @RequestPart(value = "billDto") BillDto dto,
@@ -119,6 +129,7 @@ public class BillResource {
         return ResponseEntity.ok().body(bill.getId());
     }
 
+    @Operation(summary = "Get non deleted bills", hidden = true)
     @GetMapping(value = "/getNonDeletedBills")
     public ApplicationResponse getNonDeletedBills() {
         final ApplicationResponse response = new ApplicationResponse();
@@ -132,6 +143,7 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Get deleted bills", hidden = true)
     @GetMapping(value = "/getDeletedBills")
     public ApplicationResponse getDeletedBills() {
         final ApplicationResponse response = new ApplicationResponse();
@@ -145,6 +157,7 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Get bill using one of the keyword:ESId, BillId, CustomerId")
     @GetMapping(value = "/get")
     public ApplicationResponse get(@RequestParam(value = "id", required = false) String id,
                                    @RequestParam(value = "billId", required = false) String billId,
@@ -173,6 +186,7 @@ public class BillResource {
 
     }
 
+    @Operation(summary = "Delete bill using billId")
     @DeleteMapping(value = "/delete/billId")
     public ApplicationResponse deleteById(@RequestParam(value = "billId") String billId) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
@@ -189,6 +203,7 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Delete bill using customerId")
     @DeleteMapping(value = "/delete/customerId")
     public ApplicationResponse deleteByCustomerId(@RequestParam(value = "customerId") String customerId) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();

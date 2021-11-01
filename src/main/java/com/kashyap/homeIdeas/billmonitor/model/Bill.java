@@ -12,6 +12,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Document(indexName = "bill")
 public class Bill implements Serializable {
 

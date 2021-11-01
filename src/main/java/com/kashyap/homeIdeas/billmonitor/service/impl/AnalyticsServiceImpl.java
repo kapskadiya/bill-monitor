@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService {
 

@@ -1,11 +1,15 @@
 package com.kashyap.homeIdeas.billmonitor.service;
 
-import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.constant.BillType;
+import com.kashyap.homeIdeas.billmonitor.model.Bill;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public interface BillService {
 
     void save(Bill bill);

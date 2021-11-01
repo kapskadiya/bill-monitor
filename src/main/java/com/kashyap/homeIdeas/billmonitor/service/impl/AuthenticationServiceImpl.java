@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 

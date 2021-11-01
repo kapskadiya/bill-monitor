@@ -8,6 +8,7 @@ import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationExceptio
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 import com.kashyap.homeIdeas.billmonitor.service.AnalyticsService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +25,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is the Analytics resource which can help to get the analytics related results.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @RestController
 @RequestMapping(value = "/rest/analytics")
 public class AnalyticsResource {
@@ -31,6 +37,7 @@ public class AnalyticsResource {
     @Autowired
     private AnalyticsService service;
 
+    @Operation(summary = "Get amount and time list by bill type and time interval")
     @PostMapping(value = "/amountAndTime")
     public ApplicationResponse getAmountAndTime(@RequestBody AmountVsTimeDto dto) throws IOException {
 
@@ -57,6 +64,7 @@ public class AnalyticsResource {
         return response;
     }
 
+    @Operation(summary = "Get maximum amount of the bill per year by bill type")
     @GetMapping(value = "/maxAmountPerYear")
     public ApplicationResponse getMaxAmountPerYear(@RequestParam(name = "billType") String billType) throws IOException {
 
@@ -81,6 +89,7 @@ public class AnalyticsResource {
         return response;
     }
 
+    @Operation(summary = "Get minimum amount of the bill per year by bill type")
     @GetMapping(value = "/minAmountPerYear")
     public ApplicationResponse getMinAmountPerYear(@RequestParam(name = "billType") String billType) throws IOException {
 
@@ -105,6 +114,7 @@ public class AnalyticsResource {
         return response;
     }
 
+    @Operation(summary = "Get total(sum) amount so far by bill type")
     @GetMapping(value = "/totalAmount")
     public ApplicationResponse getTotalAmount(@RequestParam(value = "billType") String billType) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
@@ -123,6 +133,7 @@ public class AnalyticsResource {
         return response;
     }
 
+    @Operation(summary = "Get totalAmount per bill type per year")
     @GetMapping(value = "/totalAmountPerTypePerYear")
     public ApplicationResponse getAmountPerTypePerYear() throws IOException {
 
@@ -141,6 +152,7 @@ public class AnalyticsResource {
         return response;
     }
 
+    @Operation(summary = "Get total(sum) amount per bill type")
     @GetMapping(value = "/totalAmountPerType")
     public ApplicationResponse getTotalAmountPerType() throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
@@ -159,6 +171,7 @@ public class AnalyticsResource {
         return response;
     }
 
+    @Operation(summary = "Get unpaid bills by bill type")
     @GetMapping(value = "/unpaidBills")
     public ApplicationResponse getUnpaidBills(@RequestParam(name = "billType") String billType) throws IOException {
 

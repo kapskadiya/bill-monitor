@@ -20,6 +20,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This is the jwt token filter which can help to authenticate HTTP requests.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Component
 public class JWTTokenFilter extends OncePerRequestFilter {
 

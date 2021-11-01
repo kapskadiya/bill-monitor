@@ -47,6 +47,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This is the custom repository for bill operations.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Repository
 public class BillCustomRepositoryImpl implements BillCustomRepository {
 

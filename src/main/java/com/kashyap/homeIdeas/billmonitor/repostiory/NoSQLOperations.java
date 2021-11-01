@@ -1,13 +1,15 @@
 package com.kashyap.homeIdeas.billmonitor.repostiory;
 
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public interface NoSQLOperations {
 
     void partialUpdate(String index, String id, String field, String value) throws IOException;

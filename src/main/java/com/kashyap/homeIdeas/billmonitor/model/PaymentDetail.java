@@ -5,6 +5,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class PaymentDetail implements Serializable {
 
     @Field(type = FieldType.Keyword)

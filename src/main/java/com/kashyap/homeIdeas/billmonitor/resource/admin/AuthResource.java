@@ -7,6 +7,7 @@ import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This is the Authentication resource which can help to login into the system
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @RestController
 @RequestMapping("/rest/admin/auth")
 public class AuthResource {
@@ -38,6 +44,7 @@ public class AuthResource {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Login into the system")
     @PostMapping("/login")
     public ApplicationResponse login(@RequestBody AuthRequest authRequest) {
         final ApplicationResponse response = new ApplicationResponse();

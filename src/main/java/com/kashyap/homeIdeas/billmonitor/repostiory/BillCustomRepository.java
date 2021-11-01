@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public interface BillCustomRepository {
     boolean bulkInsert(List<Bill> billList) throws IOException;
 

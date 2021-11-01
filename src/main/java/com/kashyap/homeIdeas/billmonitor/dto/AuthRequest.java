@@ -1,5 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.dto;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class AuthRequest {
 
     private String email;

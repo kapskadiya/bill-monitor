@@ -20,6 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+/**
+ * This is the Attachment resource which can help to manage attachment related operations. like Add, Delete
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @RestController
 @RequestMapping(value = "/rest/attachment")
 public class AttachmentResource {

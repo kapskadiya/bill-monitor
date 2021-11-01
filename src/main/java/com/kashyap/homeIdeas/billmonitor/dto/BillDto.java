@@ -5,6 +5,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class BillDto {
 
     private String billId;

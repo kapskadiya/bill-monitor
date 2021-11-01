@@ -12,6 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * This is the user builder which can help to build the User object using chain pattern.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class UserBuilder {
 
     private final User user;

@@ -3,6 +3,10 @@ package com.kashyap.homeIdeas.billmonitor.constant;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public enum TimeInterval {
    DAY, MONTH, YEAR;
 

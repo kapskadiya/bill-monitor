@@ -24,6 +24,11 @@ import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * This is the spring security configuration which can help to authenticate appropriate HTTP request.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
         securedEnabled = true,

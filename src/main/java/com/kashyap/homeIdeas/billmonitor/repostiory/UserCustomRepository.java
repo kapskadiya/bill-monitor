@@ -1,9 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.repostiory;
 
-import com.kashyap.homeIdeas.billmonitor.model.User;
-
-import java.io.IOException;
-
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public interface UserCustomRepository {
 
 }

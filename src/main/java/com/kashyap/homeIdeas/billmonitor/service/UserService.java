@@ -4,6 +4,10 @@ import com.kashyap.homeIdeas.billmonitor.model.User;
 
 import java.util.List;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public interface UserService {
 
     void save(User user);

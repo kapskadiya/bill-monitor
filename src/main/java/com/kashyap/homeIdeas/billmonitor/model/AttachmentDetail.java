@@ -8,6 +8,10 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.List;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Document(indexName = "attachment")
 public class AttachmentDetail {
 

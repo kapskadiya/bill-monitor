@@ -18,6 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Service
 public class UserServiceImpl implements UserService {
 

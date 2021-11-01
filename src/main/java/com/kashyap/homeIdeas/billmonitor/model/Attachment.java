@@ -2,6 +2,10 @@ package com.kashyap.homeIdeas.billmonitor.model;
 
 import java.io.Serializable;
 
+/**
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 public class Attachment implements Serializable {
 
     private String id;

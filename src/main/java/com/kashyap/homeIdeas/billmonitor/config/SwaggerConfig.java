@@ -12,24 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-//    @Bean
-//    public GroupedOpenApi userApiGroup() {
-//        return GroupedOpenApi
-//                .builder()
-//                .group("user")
-//                .pathsToMatch("/**/user/**")
-//                .build();
-//    }
-//
-//    @Bean
-//    public GroupedOpenApi authApiGroup() {
-//        return GroupedOpenApi
-//                .builder()
-//                .group("auth")
-//                .pathsToMatch("/**/auth/**")
-//                .build();
-//    }
-
     @Bean
     public OpenAPI apiInfo() {
         final String securitySchemaName = "bearerAuth";
@@ -48,10 +30,30 @@ public class SwaggerConfig {
                 )
                 .info(
                         new Info()
-                            .title("Bill monitor apis")
+                            .title("Bill Monitor REST APIs")
                             .description("Rest apis for bill monitor app")
                             .version("1.0")
                 );
+    }
+
+    @Bean
+    GroupedOpenApi userApis() {
+        return GroupedOpenApi.builder().group("User").pathsToMatch("/**/user/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi adminApis() {
+        return GroupedOpenApi.builder().group("Authentication").pathsToMatch("/**/auth/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi billApis() {
+        return GroupedOpenApi.builder().group("Bill").pathsToMatch("/**/bill/**").build();
+    }
+
+    @Bean
+    GroupedOpenApi analyticsApis() {
+        return GroupedOpenApi.builder().group("Analytics").pathsToMatch("/**/analytics/**").build();
     }
 
 }

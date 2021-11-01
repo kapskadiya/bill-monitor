@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+/**
+ * This is the jwt token utility.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Component
 public class JWTTokenUtil {
 

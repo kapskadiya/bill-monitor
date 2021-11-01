@@ -25,6 +25,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the nosql db repository for nosql related common operations.
+ * @author Kashyap Kadiya
+ * @since 2021-06
+ */
 @Repository
 public class NoSQLOperationsImpl implements NoSQLOperations {
 
