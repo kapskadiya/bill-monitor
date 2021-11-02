@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.TOKEN;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.USER;
+
 /**
  * This is the Authentication resource which can help to login into the system
  * @author Kashyap Kadiya
@@ -63,8 +66,8 @@ public class AuthResource {
             response.setSuccess(true);
             response.setMessage("User is successfully logged in");
 
-            success.put("token", jwtTokenUtil.generateAccessToken(loggedInUser));
-            success.put("user", UserUtil.buildDto(loggedInUser));
+            success.put(TOKEN, jwtTokenUtil.generateAccessToken(loggedInUser));
+            success.put(USER, UserUtil.buildDto(loggedInUser));
 
             response.setData(success);
 

@@ -14,8 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +35,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.BILL_DELETED_SUCCESSFULLY;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.BILL_ID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.CUSTOMER_ID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_FOUND;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_NOT_PREPARED;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.ID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_SAVED_SUCCESSFULLY;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_UPDATED_SUCCESSFULLY;
+
 /**
  * This is the Bill resource which can help to manage bills related operations. like Create, Update, View, and Delete
  * @author Kashyap Kadiya
@@ -45,8 +53,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/rest/bill")
 public class BillResource {
-
-    private static final Logger log = LoggerFactory.getLogger(BillResource.class);
 
     @Autowired
     private BillService service;
@@ -63,7 +69,7 @@ public class BillResource {
         service.save(bill);
 
         response.setSuccess(true);
-        response.setMessage("resource saved successfully");
+        response.setMessage(RESOURCE_SAVED_SUCCESSFULLY);
         response.setCode(HttpStatus.CREATED.value());
         return response;
     }
@@ -77,7 +83,7 @@ public class BillResource {
         service.update(bill);
 
         response.setSuccess(true);
-        response.setMessage("resource updated successfully");
+        response.setMessage(RESOURCE_UPDATED_SUCCESSFULLY);
         response.setCode(HttpStatus.NO_CONTENT.value());
         return response;
     }
@@ -88,7 +94,7 @@ public class BillResource {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (CollectionUtils.isEmpty(dtoList)) {
-           throw new BillMonitorValidationException("Given data is empty");
+           throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+dtoList);
         }
 
         final List<Bill> billLIst = dtoList
@@ -99,7 +105,7 @@ public class BillResource {
         service.bulkSave(billLIst);
 
         response.setSuccess(true);
-        response.setMessage("resource saved successfully");
+        response.setMessage(RESOURCE_SAVED_SUCCESSFULLY);
         response.setCode(HttpStatus.CREATED.value());
         return response;
     }
@@ -137,7 +143,7 @@ public class BillResource {
         final List<Bill> billList = service.getByIsDeleted(false);
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(billList);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -151,7 +157,7 @@ public class BillResource {
         final List<Bill> billList = service.getByIsDeleted(true);
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(billList);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -159,13 +165,13 @@ public class BillResource {
 
     @Operation(summary = "Get bill using one of the keyword:ESId, BillId, CustomerId")
     @GetMapping(value = "/get")
-    public ApplicationResponse get(@RequestParam(value = "id", required = false) String id,
-                                   @RequestParam(value = "billId", required = false) String billId,
-                                   @RequestParam(value = "customerId", required = false) String customerId) {
+    public ApplicationResponse get(@RequestParam(value = ID, required = false) String id,
+                                   @RequestParam(value = BILL_ID, required = false) String billId,
+                                   @RequestParam(value = CUSTOMER_ID, required = false) String customerId) {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(id) && StringUtils.isBlank(billId) && StringUtils.isBlank(customerId)) {
-            throw new BillMonitorValidationException("Given data is empty");
+            throw new BillMonitorValidationException(DATA_INVALID);
         }
 
         final List<Bill> billList = new ArrayList<>();
@@ -179,7 +185,7 @@ public class BillResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(billList);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -188,34 +194,32 @@ public class BillResource {
 
     @Operation(summary = "Delete bill using billId")
     @DeleteMapping(value = "/delete/billId")
-    public ApplicationResponse deleteById(@RequestParam(value = "billId") String billId) throws IOException {
+    public ApplicationResponse deleteById(@RequestParam(value = BILL_ID) String billId) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(billId)) {
-            log.error("BillId is empty");
-            throw new BillMonitorValidationException("Given Data is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+billId);
         }
         service.deleteById(billId);
 
         response.setSuccess(true);
-        response.setMessage("Bill deleted successfully");
+        response.setMessage(BILL_DELETED_SUCCESSFULLY);
         response.setCode(HttpStatus.OK.value());
         return response;
     }
 
     @Operation(summary = "Delete bill using customerId")
     @DeleteMapping(value = "/delete/customerId")
-    public ApplicationResponse deleteByCustomerId(@RequestParam(value = "customerId") String customerId) throws IOException {
+    public ApplicationResponse deleteByCustomerId(@RequestParam(value = CUSTOMER_ID) String customerId) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(customerId)) {
-            log.error("serviceNo is empty");
-            throw new BillMonitorValidationException("Given Data is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+customerId);
         }
         service.deleteByCustomerId(customerId);
 
         response.setSuccess(true);
-        response.setMessage("Bill deleted successfully");
+        response.setMessage(BILL_DELETED_SUCCESSFULLY);
         response.setCode(HttpStatus.OK.value());
         return response;
     }
@@ -223,7 +227,7 @@ public class BillResource {
     private Bill prepareBill(BillDto billDto) {
 
         final BillDto dto = Optional.ofNullable(billDto)
-                .orElseThrow(() -> new BillMonitorValidationException("Given data is empty"));
+                .orElseThrow(() -> new BillMonitorValidationException(DATA_INVALID));
 
         final Bill bill = new BillBuilder()
                 .setBillId(dto.getBillId())
@@ -252,6 +256,6 @@ public class BillResource {
         }
 
         return Optional.ofNullable(bill)
-                .orElseThrow(() -> new BillMonitorValidationException("Data is not prepared properly"));
+                .orElseThrow(() -> new BillMonitorValidationException(DATA_NOT_PREPARED));
     }
 }

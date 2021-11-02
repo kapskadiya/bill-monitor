@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_NOT_FOUND;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.SOMETHING_WENT_WRONG;
+
 /**
  * @author Kashyap Kadiya
  * @since 2021-06
@@ -43,7 +46,7 @@ public class ControllerExceptionHandler {
     public ApplicationResponse handleNoRecordFoundException(NoRecordFoundException ex) {
         log.error("ERROR: "+ex);
         final String message = ex.getMessage() == null
-                ? "Resource is not found"
+                ? RESOURCE_NOT_FOUND
                 : ex.getMessage();
 
         return new ApplicationResponse(false,
@@ -56,7 +59,7 @@ public class ControllerExceptionHandler {
     public ApplicationResponse handleDefaultException(Exception ex) {
         log.error("ERROR: "+ex);
         final String message = ex.getMessage() == null
-                ? "Something went wrong"
+                ? SOMETHING_WENT_WRONG
                 : ex.getMessage();
 
         return new ApplicationResponse(false,

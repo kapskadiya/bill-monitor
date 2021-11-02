@@ -25,6 +25,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.BILL_TYPE;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_FOUND;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
+
 /**
  * This is the Analytics resource which can help to get the analytics related results.
  * @author Kashyap Kadiya
@@ -44,7 +48,7 @@ public class AnalyticsResource {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (dto == null) {
-            throw new BillMonitorValidationException("Give value is empty");
+            throw new BillMonitorValidationException(DATA_INVALID);
         }
 
         final BillType type = BillType.getBillType(dto.getBillType());
@@ -57,7 +61,7 @@ public class AnalyticsResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -66,12 +70,12 @@ public class AnalyticsResource {
 
     @Operation(summary = "Get maximum amount of the bill per year by bill type")
     @GetMapping(value = "/maxAmountPerYear")
-    public ApplicationResponse getMaxAmountPerYear(@RequestParam(name = "billType") String billType) throws IOException {
+    public ApplicationResponse getMaxAmountPerYear(@RequestParam(name = BILL_TYPE) String billType) throws IOException {
 
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(billType)) {
-            throw new BillMonitorValidationException("Bill type is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
 
         final BillType type = BillType.getBillType(billType);
@@ -82,7 +86,7 @@ public class AnalyticsResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -91,12 +95,12 @@ public class AnalyticsResource {
 
     @Operation(summary = "Get minimum amount of the bill per year by bill type")
     @GetMapping(value = "/minAmountPerYear")
-    public ApplicationResponse getMinAmountPerYear(@RequestParam(name = "billType") String billType) throws IOException {
+    public ApplicationResponse getMinAmountPerYear(@RequestParam(name = BILL_TYPE) String billType) throws IOException {
 
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(billType)) {
-            throw new BillMonitorValidationException("Bill type is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
 
         final BillType type = BillType.getBillType(billType);
@@ -107,7 +111,7 @@ public class AnalyticsResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -116,17 +120,17 @@ public class AnalyticsResource {
 
     @Operation(summary = "Get total(sum) amount so far by bill type")
     @GetMapping(value = "/totalAmount")
-    public ApplicationResponse getTotalAmount(@RequestParam(value = "billType") String billType) throws IOException {
+    public ApplicationResponse getTotalAmount(@RequestParam(value = BILL_TYPE) String billType) throws IOException {
         final ApplicationResponse response = new ApplicationResponse();
         if (StringUtils.isBlank(billType)) {
-            throw new BillMonitorValidationException("Bill type is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
         final BillType type = BillType.getBillType(billType);
 
         final Double data = service.getTotalAmountSoFar(type);
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -145,7 +149,7 @@ public class AnalyticsResource {
             throw new NoRecordFoundException();
         }
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -164,7 +168,7 @@ public class AnalyticsResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 
@@ -173,12 +177,12 @@ public class AnalyticsResource {
 
     @Operation(summary = "Get unpaid bills by bill type")
     @GetMapping(value = "/unpaidBills")
-    public ApplicationResponse getUnpaidBills(@RequestParam(name = "billType") String billType) throws IOException {
+    public ApplicationResponse getUnpaidBills(@RequestParam(name = BILL_TYPE) String billType) throws IOException {
 
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(billType)) {
-            throw new BillMonitorValidationException("Bill type is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
 
         final BillType type = BillType.getBillType(billType);
@@ -189,7 +193,7 @@ public class AnalyticsResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setCode(HttpStatus.OK.value());
         response.setData(data);
 

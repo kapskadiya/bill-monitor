@@ -1,7 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.config;
 
 import org.elasticsearch.client.RestHighLevelClient;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
@@ -15,15 +15,24 @@ import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfig
  */
 @Configuration
 public class ESClientConfig extends AbstractElasticsearchConfiguration {
-    @NotNull
+
+    @Value("${elasticsearch.hostAndPort}")
+    private String hostAndPort;
+
+    @Value("${elasticsearch.username}")
+    private String username;
+
+    @Value("${elasticsearch.password}")
+    private String password;
+
     @Override
     @Bean
     public RestHighLevelClient elasticsearchClient() {
 
         final ClientConfiguration config = ClientConfiguration
                 .builder()
-                .connectedTo("localhost:9200")
-                .withBasicAuth("elastic", "admin123")
+                .connectedTo(hostAndPort)
+                .withBasicAuth(username, password)
                 .build();
 
         return RestClients.create(config).rest();

@@ -10,8 +10,6 @@ import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_FOUND;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.KEYWORD;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_SAVED_SUCCESSFULLY;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_UPDATED_SUCCESSFULLY;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.USER_DELETED_SUCCESSFULLY;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.USER_NOT_FOUND;
+
 /**
  * This is the User resource which can help to manage user related operation. like Create, Update, View, and Delete
  * @author Kashyap Kadiya
@@ -39,8 +45,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/rest/admin/user")
 public class UserResource {
-
-    private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
     @Autowired
     private UserService userService;
@@ -62,7 +66,7 @@ public class UserResource {
         userService.save(user);
 
         response.setSuccess(true);
-        response.setMessage("resource saved successfully");
+        response.setMessage(RESOURCE_SAVED_SUCCESSFULLY);
         response.setCode(HttpStatus.CREATED.value());
         return response;
     }
@@ -74,14 +78,14 @@ public class UserResource {
         final ApplicationResponse response = new ApplicationResponse();
 
         if (StringUtils.isBlank(dto.getEmail())) {
-            throw new BillMonitorValidationException("email is empty");
+            throw new BillMonitorValidationException(DATA_INVALID+" Data:"+dto.getEmail());
         }
 
         final User user = UserUtil.buildUser(dto);
         userService.update(user);
 
         response.setSuccess(true);
-        response.setMessage("resource updated successfully");
+        response.setMessage(RESOURCE_UPDATED_SUCCESSFULLY);
         response.setCode(HttpStatus.NO_CONTENT.value());
         return response;
     }
@@ -94,7 +98,7 @@ public class UserResource {
         final UserDto dto = UserUtil.buildDto(userService.getById(id));
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(dto);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -108,13 +112,13 @@ public class UserResource {
         final User user = userService.getNonDeletedUserByEmail(email);
 
         if (user == null) {
-            throw new NoRecordFoundException("User is not found");
+            throw new NoRecordFoundException(USER_NOT_FOUND+" Email: "+email);
         }
 
         final UserDto dto = UserUtil.buildDto(user);
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(dto);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -129,7 +133,7 @@ public class UserResource {
         userService.removeByEmail(email);
 
         response.setSuccess(true);
-        response.setMessage("User deleted successfully");
+        response.setMessage(USER_DELETED_SUCCESSFULLY);
         response.setCode(HttpStatus.OK.value());
         return response;
     }
@@ -146,7 +150,7 @@ public class UserResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(userList);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -164,7 +168,7 @@ public class UserResource {
         }
 
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(userList);
         response.setCode(HttpStatus.OK.value());
         return response;
@@ -172,7 +176,7 @@ public class UserResource {
 
     @Operation(summary = "Search user by keyword")
     @GetMapping(value = "/search")
-    public ApplicationResponse search(@RequestParam(value = "keyword") String keyword) {
+    public ApplicationResponse search(@RequestParam(value = KEYWORD) String keyword) {
         final ApplicationResponse response = new ApplicationResponse();
         final List<UserDto> userList = new ArrayList<>();
 
@@ -184,7 +188,7 @@ public class UserResource {
 
         }
         response.setSuccess(true);
-        response.setMessage("Data Found");
+        response.setMessage(DATA_FOUND);
         response.setData(userList);
         response.setCode(HttpStatus.OK.value());
         return response;

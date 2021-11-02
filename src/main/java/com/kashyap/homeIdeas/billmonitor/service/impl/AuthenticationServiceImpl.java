@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.USER_NOT_FOUND;
+
 /**
  * @author Kashyap Kadiya
  * @since 2021-06
@@ -24,6 +26,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 : null;
 
         return Optional.ofNullable(loggedInUser)
-                .orElseThrow(() -> new NoRecordFoundException("Logged-in user is not found"));
+                .orElseThrow(() -> new NoRecordFoundException(USER_NOT_FOUND));
     }
 }

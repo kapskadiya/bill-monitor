@@ -1,8 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.service.impl;
 
+import com.kashyap.homeIdeas.billmonitor.constant.BillType;
+import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;
@@ -12,8 +13,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,14 +21,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.IS_DELETED;
+
 /**
  * @author Kashyap Kadiya
  * @since 2021-06
  */
 @Service
 public class BillServiceImpl implements BillService {
-
-    private static final Logger log = LoggerFactory.getLogger(BillServiceImpl.class);
 
     @Autowired
     private BillRepository repository;
@@ -137,8 +137,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public void deleteById(String billId) throws IOException {
         if (StringUtils.isBlank(billId)) {
-            log.error("BillId is empty");
-            return;
+            throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+billId);
         }
         final String esId = repository.findOnlyESIdByBillId(billId);
 
@@ -150,14 +149,13 @@ public class BillServiceImpl implements BillService {
     @Override
     public void deleteByCustomerId(String customerId) throws IOException {
         if (StringUtils.isBlank(customerId)) {
-            log.error("customerId is empty");
-            return;
+            throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+customerId);
         }
         final List<String> esIdList = repository.findOnlyESIdsByCustomerId(customerId);
         if (CollectionUtils.isEmpty(esIdList)) {
             return;
         }
-        repository.bulkPartialUpdate(esIdList, "isDeleted", "false");
+        repository.bulkPartialUpdate(esIdList, IS_DELETED, "false");
     }
 
     @Override

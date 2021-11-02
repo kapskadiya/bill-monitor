@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.USER_NOT_FOUND;
+
 /**
  * This is the jwt token filter which can help to authenticate HTTP requests.
  * @author Kashyap Kadiya
@@ -55,7 +57,7 @@ public class JWTTokenFilter extends OncePerRequestFilter {
         final UserDetails userDetails = userService.getNonDeletedUserByEmail(jwtTokenUtil.getUsername(token));
 
         if (userDetails == null) {
-            throw new NoRecordFoundException("User is not found");
+            throw new NoRecordFoundException(USER_NOT_FOUND);
         }
 
         final UsernamePasswordAuthenticationToken authentication =

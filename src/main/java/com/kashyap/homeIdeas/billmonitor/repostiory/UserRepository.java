@@ -9,7 +9,7 @@ import java.util.List;
  * @author Kashyap Kadiya
  * @since 2021-06
  */
-public interface UserRepository extends PagingAndSortingRepository<User, String>, UserCustomRepository {
+public interface UserRepository extends PagingAndSortingRepository<User, String> {
 
     List<User> findByFirstname(final String firstname);
 

@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_NOT_PREPARED;
+
 /**
  * @author Kashyap Kadiya
  * @since 2021-06
@@ -26,7 +29,7 @@ public class UserUtil {
     public static User buildUser(UserDto userDto) {
 
         final UserDto dto = Optional.ofNullable(userDto)
-                .orElseThrow(() -> new BillMonitorValidationException("Given data is empty"));
+                .orElseThrow(() -> new BillMonitorValidationException(DATA_INVALID));
 
         final User user = new UserBuilder()
                 .setFirstname(dto.getFirstname())
@@ -38,7 +41,7 @@ public class UserUtil {
                 .build();
 
         return Optional.ofNullable(user)
-                .orElseThrow(() -> new BillMonitorValidationException("Data is not prepared properly"));
+                .orElseThrow(() -> new BillMonitorValidationException(DATA_NOT_PREPARED));
     }
 
     public static UserDto buildDto(final User fetchedUser) {

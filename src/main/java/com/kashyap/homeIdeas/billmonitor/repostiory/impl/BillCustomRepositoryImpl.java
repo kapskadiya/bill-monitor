@@ -34,9 +34,8 @@ import org.elasticsearch.search.aggregations.metrics.TopHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -46,6 +45,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.BILL_ID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.CUSTOMER_ID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.ISSUE_DATE;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.IS_DELETED;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.PAYMENT_DETAIL;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.TOTAL_AMOUNT;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.TYPE;
 
 /**
  * This is the custom repository for bill operations.
@@ -58,10 +66,10 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
     @Autowired
     private NoSQLOperations noSQLOperations;
 
-    private static final Logger log = LoggerFactory.getLogger(BillCustomRepositoryImpl.class);
-
     private final ObjectMapper objectMapper = getDefaultObjectMapper();
-    private final String indexName = "bill";
+
+    @Value("${elasticsearch.bill.index-name}")
+    private String indexName;
 
     @Override
     public boolean bulkInsert(List<Bill> billList) throws IOException {
@@ -86,7 +94,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
        if(StringUtils.isBlank(id)) {
            return;
        }
-        noSQLOperations.partialUpdate(indexName, id, "isDeleted", String.valueOf(isDeleted));
+        noSQLOperations.partialUpdate(indexName, id, IS_DELETED, String.valueOf(isDeleted));
     }
 
     @Override
@@ -95,7 +103,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
             return StringUtils.EMPTY;
         }
 
-        final List<String> idList = noSQLOperations.getOnlyIds(indexName, "billId", billId);
+        final List<String> idList = noSQLOperations.getOnlyIds(indexName, BILL_ID, billId);
         if (CollectionUtils.isNotEmpty(idList) && StringUtils.isNotBlank(idList.get(0))) {
             return idList.get(0);
         }
@@ -108,7 +116,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
             return new ArrayList<>();
         }
 
-        final List<String> idList = noSQLOperations.getOnlyIds(indexName, "customerId", customerId);
+        final List<String> idList = noSQLOperations.getOnlyIds(indexName, CUSTOMER_ID, customerId);
         if (CollectionUtils.isNotEmpty(idList)) {
             return idList;
         }
@@ -127,17 +135,17 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("time_amount_agg",
-                QueryBuilders.termQuery("type", billType.name()));
+                QueryBuilders.termQuery(TYPE, billType.name()));
 
         final DateHistogramInterval dateHistogramInterval = getDateHistogramIntervalByTimeInterval(timeInterval);
         final String dateFormat = getDateFormatByTimeInterval(timeInterval);
 
         final AggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
-                .field("issueDate")
+                .field(ISSUE_DATE)
                 .calendarInterval(dateHistogramInterval)
                 .format(dateFormat)
                 .order(BucketOrder.key(true));
-        histogramAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field("totalAmount"));
+        histogramAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field(TOTAL_AMOUNT));
 
         mainAggregation.subAggregation(histogramAggregationBuilder);
 
@@ -152,7 +160,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
             case "DAY": return DateHistogramInterval.DAY;
             case "MONTH": return DateHistogramInterval.MONTH;
             case "YEAR": return DateHistogramInterval.YEAR;
-            default: throw new BillMonitorValidationException("Time interval value is empty.");
+            default: throw new BillMonitorValidationException(DATA_INVALID+" Data:"+timeInterval.name());
         }
     }
 
@@ -161,7 +169,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
             case "DAY": return "dd";
             case "MONTH": return "MM-yyyy";
             case "YEAR": return "yyyy";
-            default: throw new BillMonitorValidationException("Time interval value is empty.");
+            default: throw new BillMonitorValidationException(DATA_INVALID+" Data:"+timeInterval.name());
         }
     }
 
@@ -202,18 +210,18 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("time_amount_agg",
-                QueryBuilders.termQuery("type", billType.name()));
+                QueryBuilders.termQuery(TYPE, billType.name()));
 
         final AggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
-                .field("issueDate")
+                .field(ISSUE_DATE)
                 .calendarInterval(DateHistogramInterval.YEAR)
                 .format("yyyy")
                 .order(BucketOrder.key(true));
 
         histogramAggregationBuilder.subAggregation(AggregationBuilders
                 .topHits("topHits_agg")
-                .sort(SortBuilders.fieldSort("totalAmount").order(order))
-                .size(1).fetchSource(new String[]{"issueDate", "totalAmount"}, null));
+                .sort(SortBuilders.fieldSort(TOTAL_AMOUNT).order(order))
+                .size(1).fetchSource(new String[]{ISSUE_DATE, TOTAL_AMOUNT}, null));
 
 
         mainAggregation.subAggregation(histogramAggregationBuilder);
@@ -265,9 +273,9 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("type_filter_agg",
-                QueryBuilders.termQuery("type", billType.name()));
+                QueryBuilders.termQuery(TYPE, billType.name()));
 
-        final AggregationBuilder sumAggregationBuilder = AggregationBuilders.sum("sum_agg").field("totalAmount");
+        final AggregationBuilder sumAggregationBuilder = AggregationBuilders.sum("sum_agg").field(TOTAL_AMOUNT);
 
         mainAggregation.subAggregation(sumAggregationBuilder);
 
@@ -295,15 +303,15 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         final DateHistogramAggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
-                .field("issueDate")
+                .field(ISSUE_DATE)
                 .calendarInterval(DateHistogramInterval.YEAR)
                 .format("yyyy")
                 .order(BucketOrder.key(true));
 
         final TermsAggregationBuilder termAggregationBuilder = AggregationBuilders.terms("type_agg")
-                .field("type");
+                .field(TYPE);
 
-        termAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field("totalAmount"));
+        termAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field(TOTAL_AMOUNT));
 
         histogramAggregationBuilder.subAggregation(termAggregationBuilder);
 
@@ -341,9 +349,9 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         final TermsAggregationBuilder termAggregationBuilder = AggregationBuilders.terms("type_agg")
-                .field("type");
+                .field(TYPE);
 
-        termAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field("totalAmount"));
+        termAggregationBuilder.subAggregation(AggregationBuilders.sum("amount_agg").field(TOTAL_AMOUNT));
 
         searchSourceBuilder.size(0);
         searchRequest.source(searchSourceBuilder.aggregation(termAggregationBuilder));
@@ -373,12 +381,12 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
 
         final BoolQueryBuilder mainBollQueryBuilder = QueryBuilders.boolQuery();
         List<QueryBuilder> mustQueryBuilderList = mainBollQueryBuilder.must();
-        mustQueryBuilderList.add(QueryBuilders.termQuery("type", billType.name()));
+        mustQueryBuilderList.add(QueryBuilders.termQuery(TYPE, billType.name()));
 
         final BoolQueryBuilder childBoolQueryBuilder = QueryBuilders.boolQuery();
         final List<QueryBuilder> shouldQueryBuilderList = childBoolQueryBuilder.should();
-        shouldQueryBuilderList.add(QueryBuilders.nestedQuery("paymentDetail", QueryBuilders.termQuery("paymentDetail.status", "PENDING"), ScoreMode.Avg));
-        shouldQueryBuilderList.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("paymentDetail", QueryBuilders.existsQuery("paymentDetail"), ScoreMode.Avg)));
+        shouldQueryBuilderList.add(QueryBuilders.nestedQuery(PAYMENT_DETAIL, QueryBuilders.termQuery("paymentDetail.status", "PENDING"), ScoreMode.Avg));
+        shouldQueryBuilderList.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery(PAYMENT_DETAIL, QueryBuilders.existsQuery(PAYMENT_DETAIL), ScoreMode.Avg)));
 
         mustQueryBuilderList.add(childBoolQueryBuilder);
 

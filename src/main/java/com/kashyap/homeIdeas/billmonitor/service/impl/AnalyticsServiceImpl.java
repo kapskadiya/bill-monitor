@@ -15,6 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.BILL_ID;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DUE_DATE;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.ISSUE_DATE;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.TOTAL_AMOUNT;
+
 /**
  * @author Kashyap Kadiya
  * @since 2021-06
@@ -35,7 +40,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         final List<Map<String, Object>> dataList = billRepository.findMaxAmountPerYear(billType);
 
         dataList.forEach(dataMap ->
-            dataMap.computeIfPresent("issueDate",(k,v) -> v = new Date(Long.parseLong(v.toString()))));
+            dataMap.computeIfPresent(ISSUE_DATE,(k,v) -> v = new Date(Long.parseLong(v.toString()))));
 
         return dataList;
     }
@@ -45,7 +50,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         final List<Map<String, Object>> dataList = billRepository.findMinAmountPerYear(billType);
 
         dataList.forEach(dataMap ->
-                dataMap.computeIfPresent("issueDate",(k,v) -> v = new Date(Long.parseLong(v.toString()))));
+                dataMap.computeIfPresent(ISSUE_DATE,(k,v) -> v = new Date(Long.parseLong(v.toString()))));
 
         return dataList;
     }
@@ -68,7 +73,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     public List<Map<String, Object>> getUnpaidBillsByType(BillType billType) throws IOException {
         final List<Map<String, Object>> billList = billRepository.findUnPaidBillsByType(billType);
-        final String[] keys = new String[]{"billId", "totalAmount", "issueDate", "dueDate"};
+        final String[] keys = new String[]{BILL_ID, TOTAL_AMOUNT, ISSUE_DATE, DUE_DATE};
 
         final List<Map<String, Object>> dataList = new ArrayList<>();
         billList.forEach(bill -> {

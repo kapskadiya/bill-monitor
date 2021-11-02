@@ -16,14 +16,14 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.USER;
 
 /**
  * This is the nosql db repository for nosql related common operations.
@@ -32,8 +32,6 @@ import java.util.List;
  */
 @Repository
 public class NoSQLOperationsImpl implements NoSQLOperations {
-
-    private static final Logger log = LoggerFactory.getLogger(NoSQLOperationsImpl.class);
 
     @Autowired
     private RestHighLevelClient client;
@@ -47,22 +45,11 @@ public class NoSQLOperationsImpl implements NoSQLOperations {
 
     @Override
     public boolean removeById(final String id) throws IOException {
-        final DeleteRequest request = new DeleteRequest("user", id);
+        final DeleteRequest request = new DeleteRequest(USER, id);
         final DeleteResponse response = client.delete(request, RequestOptions.DEFAULT);
 
         return response.status().getStatus() > 0;
     }
-
-/*
-    @Override
-    public boolean removeByUsername(final String username) throws IOException {
-        final DeleteByQueryRequest request = new DeleteByQueryRequest("user");
-        request.setQuery(new TermQueryBuilder("username", username));
-
-            final BulkByScrollResponse response = client.deleteByQuery(request, RequestOptions.DEFAULT);
-        return response.getDeleted() > 0;
-    }
-*/
 
     @Override
     public boolean bulkInsert(String indexName, List<String> jsonValueList) throws IOException {
