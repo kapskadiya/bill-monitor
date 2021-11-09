@@ -2,12 +2,10 @@ package com.kashyap.homeIdeas.billmonitor.builder;
 
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This is the user builder which can help to build the User object using chain pattern.
@@ -64,14 +62,9 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder setUserServices(Map<String, String> services) {
-        if (MapUtils.isNotEmpty(services)) {
-            final List<User.Service> serviceList = services
-                    .entrySet()
-                    .stream()
-                    .map(entry -> new User.Service(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toList());
-            this.user.setServices(serviceList);
+    public UserBuilder setUserServices(List<User.Service> services) {
+        if(CollectionUtils.isNotEmpty(services)) {
+            this.user.setServices(services);
         }
         return this;
     }

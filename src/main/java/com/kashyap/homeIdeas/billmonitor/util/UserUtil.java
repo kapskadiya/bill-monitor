@@ -6,14 +6,9 @@ import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationExceptio
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_INVALID;
 import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DATA_NOT_PREPARED;
@@ -24,8 +19,6 @@ import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.DAT
  */
 public class UserUtil {
 
-    private final static PasswordEncoder encoder = new BCryptPasswordEncoder();
-
     public static User buildUser(UserDto userDto) {
 
         final UserDto dto = Optional.ofNullable(userDto)
@@ -35,7 +28,6 @@ public class UserUtil {
                 .setFirstname(dto.getFirstname())
                 .setLastname(dto.getLastname())
                 .setEmail(dto.getEmail())
-                .setPassword( StringUtils.isNotBlank(dto.getPassword()) ? encoder.encode(dto.getPassword()) : null)
                 .setRole( StringUtils.isNotBlank(dto.getRole()) ? Role.getRole(dto.getRole()) : null)
                 .setUserServices(dto.getServices())
                 .build();
@@ -58,12 +50,7 @@ public class UserUtil {
         dto.setUpdatedBy(user.getUpdatedBy());
         dto.setCreatedDate(user.getCreatedDate());
         dto.setUpdatedDate(user.getUpdatedDate());
-        if (CollectionUtils.isNotEmpty(user.getServices())){
-            final Map<String, String> services = user.getServices()
-                    .stream()
-                    .collect(Collectors.toMap(User.Service::getName, User.Service::getNumber));
-            dto.setServices(services);
-        }
+        dto.setServices(user.getServices());
 
         return dto;
     }

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,9 @@ public class UserResource {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     @GetMapping(value = "/welcome")
     @ResponseStatus(HttpStatus.OK)
@@ -63,6 +67,8 @@ public class UserResource {
         final ApplicationResponse response = new ApplicationResponse();
 
         final User user = UserUtil.buildUser(dto);
+        user.setPassword( StringUtils.isNotBlank(dto.getPassword()) ? encoder.encode(dto.getPassword()) : null);
+
         userService.save(user);
 
         response.setSuccess(true);

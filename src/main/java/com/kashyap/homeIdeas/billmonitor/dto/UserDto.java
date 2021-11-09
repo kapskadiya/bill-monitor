@@ -2,12 +2,14 @@ package com.kashyap.homeIdeas.billmonitor.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kashyap.homeIdeas.billmonitor.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class UserDto {
@@ -31,7 +33,6 @@ public class UserDto {
     @Size(min = 8, message = "Password must contain more than 8 characters")
     private String password;
 
-    @JsonIgnore
     private String role;
 
     @JsonIgnore
@@ -45,7 +46,7 @@ public class UserDto {
     @JsonIgnore
     private Date updatedDate;
 
-    private Map<String, String> services;
+    private List<User.Service> services;
 
     public String getFirstname() {
         return firstname;
@@ -105,11 +106,11 @@ public class UserDto {
         this.updatedBy = updatedBy;
     }
 
-    public Map<String, String> getServices() {
+    public List<User.Service> getServices() {
         return services;
     }
 
-    public void setServices(Map<String, String> services) {
+    public void setServices(List<User.Service> services) {
         this.services = services;
     }
 
