@@ -25,7 +25,8 @@ public class ApplicationConstant {
     public static final String BILL_DELETED_SUCCESSFULLY = "Bill is deleted successfully";
     public static final String DATA_NOT_PREPARED = "Data is not prepared properly";
     public static final String USER_EXIST = "User is already exist";
-    public static final String RESOURCE_NOT_FOUND = "Resource is not found";
+    public static final String RESOURCE_IS_NOT_AVAILABLE = "Resource is not available";
     public static final String SOMETHING_WENT_WRONG = "Something went wrong";
+    public static final String RESOURCE_NOT_SAVED_SUCCESSFULLY = "Resource is not saved successfully";
 
 }

@@ -7,9 +7,11 @@ import com.kashyap.homeIdeas.billmonitor.dto.BillDto;
 import com.kashyap.homeIdeas.billmonitor.dto.PaymentDetailDto;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.service.AttachmentService;
 import com.kashyap.homeIdeas.billmonitor.service.BillService;
+import com.kashyap.homeIdeas.billmonitor.service.BillTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +61,9 @@ public class BillResource {
 
     @Autowired
     private AttachmentService attachmentService;
+
+    @Autowired
+    private BillTypeService billTypeService;
 
     @Operation(summary = "Create new bill")
     @PostMapping(value = "/create")
@@ -224,16 +229,34 @@ public class BillResource {
         return response;
     }
 
+    @Operation(summary = "Delete bill using es id")
+    @DeleteMapping(value = "/delete/id")
+    public ApplicationResponse deleteByESId(@RequestParam(value = "id") String id) throws IOException {
+        final ApplicationResponse response = new ApplicationResponse();
+
+        if (StringUtils.isBlank(id)) {
+            throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+id);
+        }
+        service.deleteByESId(id);
+
+        response.setSuccess(true);
+        response.setMessage(BILL_DELETED_SUCCESSFULLY);
+        response.setCode(HttpStatus.OK.value());
+        return response;
+    }
+
     private Bill prepareBill(BillDto billDto) {
 
         final BillDto dto = Optional.ofNullable(billDto)
                 .orElseThrow(() -> new BillMonitorValidationException(DATA_INVALID));
 
+        final BillType type = billTypeService.getBillType(dto.getType());
+
         final Bill bill = new BillBuilder()
                 .setBillId(dto.getBillId())
                 .setOrgName(dto.getOrgName())
                 .setCustomerId(dto.getCustomerId())
-                .setType(dto.getType())
+                .setType(type.getId())
                 .setTotalAmount(dto.getTotalAmount())
                 .setIssueDate(dto.getIssueDate())
                 .setDueDate(dto.getDueDate())

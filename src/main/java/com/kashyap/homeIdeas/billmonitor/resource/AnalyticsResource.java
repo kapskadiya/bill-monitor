@@ -1,13 +1,14 @@
 package com.kashyap.homeIdeas.billmonitor.resource;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.constant.TimeInterval;
 import com.kashyap.homeIdeas.billmonitor.dto.AmountVsTimeDto;
 import com.kashyap.homeIdeas.billmonitor.dto.ApplicationResponse;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 import com.kashyap.homeIdeas.billmonitor.service.AnalyticsService;
+import com.kashyap.homeIdeas.billmonitor.service.BillTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -41,6 +42,9 @@ public class AnalyticsResource {
     @Autowired
     private AnalyticsService service;
 
+    @Autowired
+    private BillTypeService billTypeService;
+
     @Operation(summary = "Get amount and time list by bill type and time interval")
     @PostMapping(value = "/amountAndTime")
     public ApplicationResponse getAmountAndTime(@RequestBody AmountVsTimeDto dto) throws IOException {
@@ -51,10 +55,11 @@ public class AnalyticsResource {
             throw new BillMonitorValidationException(DATA_INVALID);
         }
 
-        final BillType type = BillType.getBillType(dto.getBillType());
+
+        final BillType billType = billTypeService.getBillType(dto.getBillType());
         final TimeInterval timeIn = TimeInterval.getTimeDuration(dto.getTimeIn());
 
-        final List<ChartValue> data = service.getAmountAndTime(type, timeIn);
+        final List<ChartValue> data = service.getAmountAndTime(billType, timeIn);
 
         if (CollectionUtils.isEmpty(data)) {
             throw new NoRecordFoundException();
@@ -78,7 +83,7 @@ public class AnalyticsResource {
             throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
 
-        final BillType type = BillType.getBillType(billType);
+        final BillType type = billTypeService.getBillType(billType);
         final List<Map<String, Object>> data = service.getMaxAmountPerYear(type);
 
         if (CollectionUtils.isEmpty(data)) {
@@ -103,7 +108,7 @@ public class AnalyticsResource {
             throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
 
-        final BillType type = BillType.getBillType(billType);
+        final BillType type = billTypeService.getBillType(billType);
         final List<Map<String, Object>> data = service.getMinAmountPerYear(type);
 
         if (CollectionUtils.isEmpty(data)) {
@@ -125,7 +130,7 @@ public class AnalyticsResource {
         if (StringUtils.isBlank(billType)) {
             throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
-        final BillType type = BillType.getBillType(billType);
+        final BillType type = billTypeService.getBillType(billType);
 
         final Double data = service.getTotalAmountSoFar(type);
 
@@ -185,7 +190,7 @@ public class AnalyticsResource {
             throw new BillMonitorValidationException(DATA_INVALID+" Data:"+billType);
         }
 
-        final BillType type = BillType.getBillType(billType);
+        final BillType type = billTypeService.getBillType(billType);
         final List<Map<String, Object>> data = service.getUnpaidBillsByType(type);
 
         if (CollectionUtils.isEmpty(data)) {

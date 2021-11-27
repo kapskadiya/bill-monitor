@@ -5,6 +5,7 @@ import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.User;
+import com.kashyap.homeIdeas.billmonitor.service.BillTypeService;
 import com.kashyap.homeIdeas.billmonitor.service.UserService;
 import com.kashyap.homeIdeas.billmonitor.util.UserUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +54,9 @@ public class UserResource {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Autowired
+    private BillTypeService billTypeService;
+
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     @GetMapping(value = "/welcome")
     @ResponseStatus(HttpStatus.OK)
@@ -61,7 +65,7 @@ public class UserResource {
     }
 
     @Operation(summary = "Create new user")
-    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/create")
     public ApplicationResponse create(@Valid @RequestBody UserDto dto) {
         final ApplicationResponse response = new ApplicationResponse();
@@ -69,6 +73,13 @@ public class UserResource {
         final User user = UserUtil.buildUser(dto);
         user.setPassword( StringUtils.isNotBlank(dto.getPassword()) ? encoder.encode(dto.getPassword()) : null);
 
+        if(CollectionUtils.isNotEmpty(user.getServices())) {
+            final List<User.Service> serviceList = user.getServices()
+                    .stream()
+                    .filter(service -> billTypeService.getBillType(service.getName()) != null)
+                    .collect(Collectors.toList());
+            user.setServices(serviceList);
+        }
         userService.save(user);
 
         response.setSuccess(true);
@@ -88,6 +99,15 @@ public class UserResource {
         }
 
         final User user = UserUtil.buildUser(dto);
+
+        if(CollectionUtils.isNotEmpty(user.getServices())) {
+            final List<User.Service> serviceList = user.getServices()
+                    .stream()
+                    .filter(service -> billTypeService.getBillType(service.getName()) != null)
+                    .collect(Collectors.toList());
+            user.setServices(serviceList);
+        }
+
         userService.update(user);
 
         response.setSuccess(true);

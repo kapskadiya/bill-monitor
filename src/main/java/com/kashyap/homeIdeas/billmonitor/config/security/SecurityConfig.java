@@ -98,6 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(String.format("%s/**", swaggerPath)).permitAll()
                 .antMatchers("/rest/**/login").permitAll()
                 .antMatchers("/rest/admin/user/create").permitAll()
+                .antMatchers("/rest/billtype/getAll").permitAll()
                 .anyRequest().authenticated();
 
         // Add JWT token filter

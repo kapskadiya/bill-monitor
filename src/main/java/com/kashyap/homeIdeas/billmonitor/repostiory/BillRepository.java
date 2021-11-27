@@ -1,6 +1,5 @@
 package com.kashyap.homeIdeas.billmonitor.repostiory;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
@@ -14,7 +13,7 @@ public interface BillRepository extends ElasticsearchRepository<Bill, String>, B
 
     List<Bill> findByCustomerId(String customerName);
 
-    List<Bill> findByType(BillType type);
+    List<Bill> findByType(String type);
 
     List<Bill> findByIsDeleted(boolean isDeleted);
 

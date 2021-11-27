@@ -1,4 +1,4 @@
-package com.kashyap.homeIdeas.billmonitor.model;
+package com.kashyap.homeIdeas.billmonitor.constant;
 
 /**
  * @author Kashyap Kadiya

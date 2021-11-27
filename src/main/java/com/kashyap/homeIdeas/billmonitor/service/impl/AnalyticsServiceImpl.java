@@ -1,6 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.service.impl;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.constant.TimeInterval;
 import com.kashyap.homeIdeas.billmonitor.model.ChartValue;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;

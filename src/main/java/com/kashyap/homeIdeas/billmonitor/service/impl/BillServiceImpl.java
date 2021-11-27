@@ -1,9 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.service.impl;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import com.kashyap.homeIdeas.billmonitor.repostiory.BillRepository;
@@ -159,6 +159,14 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public void deleteByESId(String id) {
+        if (StringUtils.isBlank(id)) {
+            throw new BillMonitorValidationException(DATA_INVALID+ " Data:"+id);
+        }
+        repository.deleteById(id);
+    }
+
+    @Override
     public List<Bill> getAll(){
         final Iterable<Bill> bills = repository.findAll();
         return IterableUtils.toList(bills);
@@ -178,7 +186,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<Bill> getByType(BillType type) {
-        return repository.findByType(type);
+        return repository.findByType(type.getId());
     }
 
     @Override

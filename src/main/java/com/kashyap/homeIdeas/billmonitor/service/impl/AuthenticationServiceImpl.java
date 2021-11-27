@@ -21,9 +21,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User getLoggedInUser() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final User loggedInUser = (authentication != null)
-                ? (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()
-                : null;
+        User loggedInUser = null;
+        if (authentication != null) {
+            final Object auth = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (auth instanceof User) {
+                loggedInUser = (User) auth;
+            } else {
+                final User dummyUser = new User();
+                dummyUser.setEmail("application@billmonitor.com");
+                loggedInUser = dummyUser;
+            }
+        }
 
         return Optional.ofNullable(loggedInUser)
                 .orElseThrow(() -> new NoRecordFoundException(USER_NOT_FOUND));

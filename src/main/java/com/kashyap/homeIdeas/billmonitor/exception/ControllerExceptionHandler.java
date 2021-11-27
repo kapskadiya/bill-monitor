@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_NOT_FOUND;
+import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.RESOURCE_IS_NOT_AVAILABLE;
 import static com.kashyap.homeIdeas.billmonitor.constant.ApplicationConstant.SOMETHING_WENT_WRONG;
 
 /**
@@ -46,7 +46,7 @@ public class ControllerExceptionHandler {
     public ApplicationResponse handleNoRecordFoundException(NoRecordFoundException ex) {
         log.error("ERROR: "+ex);
         final String message = ex.getMessage() == null
-                ? RESOURCE_NOT_FOUND
+                ? RESOURCE_IS_NOT_AVAILABLE
                 : ex.getMessage();
 
         return new ApplicationResponse(false,

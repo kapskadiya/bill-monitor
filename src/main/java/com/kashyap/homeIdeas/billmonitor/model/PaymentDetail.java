@@ -1,5 +1,8 @@
 package com.kashyap.homeIdeas.billmonitor.model;
 
+import com.kashyap.homeIdeas.billmonitor.constant.PaymentMethodType;
+import com.kashyap.homeIdeas.billmonitor.constant.PaymentStatus;
+import com.kashyap.homeIdeas.billmonitor.constant.PaymentType;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 

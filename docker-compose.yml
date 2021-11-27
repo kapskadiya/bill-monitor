@@ -3,7 +3,7 @@ version: '3'
 services:
   elasticsearch:
     container_name: es7
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es7
       - cluster.name=es7-docker-cluster
@@ -13,8 +13,8 @@ services:
       - xpack.security.enabled=true
       - xpack.security.audit.enabled=true
       - ELASTIC_PASSWORD=admin123
-#    volumes:
-#      - D:\Personal-KS\Project\esdata:/usr/share/elasticsearch/data
+    volumes:
+      - I:\Project\elasticsearch\esData:/usr/share/elasticsearch/data
     ports:
       - "9300:9300"
       - "9200:9200"
@@ -23,7 +23,7 @@ services:
 
   kibana:
     container_name: kibana7
-    image: docker.elastic.co/kibana/kibana:7.13.1
+    image: docker.elastic.co/kibana/kibana:7.15.2
     environment:
       - ELASTICSEARCH_HOSTS=http://es7:9200
       - ELASTICSEARCH_USERNAME=elastic

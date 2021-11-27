@@ -1,6 +1,5 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
 import org.apache.commons.collections4.MapUtils;
@@ -39,7 +38,7 @@ public class BillBuilder {
 
     public BillBuilder setType(String type) {
         if (StringUtils.isNotBlank(type)) {
-            this.bill.setType(BillType.getBillType(type));
+            this.bill.setType(type);
         }
         return this;
     }

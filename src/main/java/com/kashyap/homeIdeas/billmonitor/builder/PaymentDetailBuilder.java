@@ -1,9 +1,9 @@
 package com.kashyap.homeIdeas.billmonitor.builder;
 
 import com.kashyap.homeIdeas.billmonitor.model.PaymentDetail;
-import com.kashyap.homeIdeas.billmonitor.model.PaymentMethodType;
-import com.kashyap.homeIdeas.billmonitor.model.PaymentStatus;
-import com.kashyap.homeIdeas.billmonitor.model.PaymentType;
+import com.kashyap.homeIdeas.billmonitor.constant.PaymentMethodType;
+import com.kashyap.homeIdeas.billmonitor.constant.PaymentStatus;
+import com.kashyap.homeIdeas.billmonitor.constant.PaymentType;
 import org.apache.commons.lang3.StringUtils;
 
 /**

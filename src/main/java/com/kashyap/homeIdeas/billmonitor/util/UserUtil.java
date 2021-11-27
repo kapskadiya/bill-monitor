@@ -4,7 +4,7 @@ import com.kashyap.homeIdeas.billmonitor.builder.UserBuilder;
 import com.kashyap.homeIdeas.billmonitor.dto.UserDto;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.exception.NoRecordFoundException;
-import com.kashyap.homeIdeas.billmonitor.model.Role;
+import com.kashyap.homeIdeas.billmonitor.constant.Role;
 import com.kashyap.homeIdeas.billmonitor.model.User;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +28,7 @@ public class UserUtil {
                 .setFirstname(dto.getFirstname())
                 .setLastname(dto.getLastname())
                 .setEmail(dto.getEmail())
-                .setRole( StringUtils.isNotBlank(dto.getRole()) ? Role.getRole(dto.getRole()) : null)
+                .setRole( StringUtils.isNotBlank(dto.getRole()) ? Role.getRole(dto.getRole()) : Role.USER)
                 .setUserServices(dto.getServices())
                 .build();
 

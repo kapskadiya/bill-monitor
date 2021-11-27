@@ -3,7 +3,7 @@ package com.kashyap.homeIdeas.billmonitor.repostiory.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 import com.kashyap.homeIdeas.billmonitor.constant.TimeInterval;
 import com.kashyap.homeIdeas.billmonitor.exception.BillMonitorValidationException;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
@@ -135,7 +135,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("time_amount_agg",
-                QueryBuilders.termQuery(TYPE, billType.name()));
+                QueryBuilders.termQuery(TYPE, billType.getId()));
 
         final DateHistogramInterval dateHistogramInterval = getDateHistogramIntervalByTimeInterval(timeInterval);
         final String dateFormat = getDateFormatByTimeInterval(timeInterval);
@@ -210,7 +210,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("time_amount_agg",
-                QueryBuilders.termQuery(TYPE, billType.name()));
+                QueryBuilders.termQuery(TYPE, billType.getId()));
 
         final AggregationBuilder histogramAggregationBuilder = AggregationBuilders.dateHistogram("time_agg")
                 .field(ISSUE_DATE)
@@ -273,7 +273,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
         final SearchRequest searchRequest = new SearchRequest(indexName);
         final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         final FilterAggregationBuilder mainAggregation = AggregationBuilders.filter("type_filter_agg",
-                QueryBuilders.termQuery(TYPE, billType.name()));
+                QueryBuilders.termQuery(TYPE, billType.getId()));
 
         final AggregationBuilder sumAggregationBuilder = AggregationBuilders.sum("sum_agg").field(TOTAL_AMOUNT);
 
@@ -381,7 +381,7 @@ public class BillCustomRepositoryImpl implements BillCustomRepository {
 
         final BoolQueryBuilder mainBollQueryBuilder = QueryBuilders.boolQuery();
         List<QueryBuilder> mustQueryBuilderList = mainBollQueryBuilder.must();
-        mustQueryBuilderList.add(QueryBuilders.termQuery(TYPE, billType.name()));
+        mustQueryBuilderList.add(QueryBuilders.termQuery(TYPE, billType.getId()));
 
         final BoolQueryBuilder childBoolQueryBuilder = QueryBuilders.boolQuery();
         final List<QueryBuilder> shouldQueryBuilderList = childBoolQueryBuilder.should();

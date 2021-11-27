@@ -1,7 +1,7 @@
 package com.kashyap.homeIdeas.billmonitor.service;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import com.kashyap.homeIdeas.billmonitor.model.Bill;
+import com.kashyap.homeIdeas.billmonitor.model.BillType;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +28,8 @@ public interface BillService {
 
     void deleteByCustomerId(String customerId) throws IOException;
 
+    void deleteByESId(String id);
+
     List<Bill> getAll();
 
     boolean bulkSave(List<Bill> billList) throws IOException;
@@ -35,4 +37,5 @@ public interface BillService {
     List<Bill> getByType(BillType type);
 
     List<Bill> getByIsDeleted(boolean isDeleted);
+
 }

@@ -1,6 +1,5 @@
 package com.kashyap.homeIdeas.billmonitor.model;
 
-import com.kashyap.homeIdeas.billmonitor.constant.BillType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.elasticsearch.annotations.DateFormat;
@@ -33,7 +32,7 @@ public class Bill implements Serializable {
     private String customerId;
 
     @Field(type = FieldType.Keyword)
-    private BillType type;
+    private String type;
 
     @Field(type = FieldType.Date, format = {DateFormat.epoch_millis})
     private Date issueDate;
@@ -87,11 +86,11 @@ public class Bill implements Serializable {
         this.orgName = orgName;
     }
 
-    public BillType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(BillType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

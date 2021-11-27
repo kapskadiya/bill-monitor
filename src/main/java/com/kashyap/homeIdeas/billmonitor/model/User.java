@@ -1,5 +1,6 @@
 package com.kashyap.homeIdeas.billmonitor.model;
 
+import com.kashyap.homeIdeas.billmonitor.constant.Role;
 import org.elasticsearch.common.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
